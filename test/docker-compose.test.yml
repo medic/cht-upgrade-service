@@ -1,0 +1,11 @@
+version: '3'
+services:
+  watcher:
+    build: ../
+    container_name: cht-upgrade-service
+    ports:
+      - "5100:5100"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../docker-compose:/docker-compose
+    command: node /app/src/index.js

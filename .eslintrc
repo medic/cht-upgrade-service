@@ -1,0 +1,6 @@
+{
+  "extends": "@medic",
+  "parserOptions": {
+    "ecmaVersion": 6
+  }
+}
