@@ -32,11 +32,11 @@ const up = (fileName) => composeCommand(fileName, 'up', '-d', '--remove-orphans'
 const validate = async (fileName) => {
   try {
     await composeCommand(fileName, 'config');
-    return true
+    return true;
   } catch (err) {
     return false;
   }
-}
+};
 
 module.exports = {
   pull,

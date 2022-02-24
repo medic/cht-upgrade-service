@@ -147,7 +147,7 @@ describe('containers lib', () => {
     it('should throw error if overwrite fails', async () => {
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
-      fs.promises.writeFile.onCall(1).rejects({ the: 'error' })
+      fs.promises.writeFile.onCall(1).rejects({ the: 'error' });
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(dockerComposeCli, 'validate').resolves(false);
 

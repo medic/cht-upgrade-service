@@ -120,8 +120,8 @@ describe('docker-compose cli', () => {
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
-      process.stderrCb('error1')
-      process.stderrCb('error2')
+      process.stderrCb('error1');
+      process.stderrCb('error2');
 
       process.events.exit(321);
       await expect(result).to.be.rejectedWith('error1error2');
@@ -178,8 +178,8 @@ describe('docker-compose cli', () => {
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
-      process.stderrCb('errors')
-      process.stderrCb('happen')
+      process.stderrCb('errors');
+      process.stderrCb('happen');
 
       process.events.exit(321);
       await expect(result).to.be.rejectedWith('errorshappen');

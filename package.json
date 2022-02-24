@@ -4,7 +4,7 @@
   "description": "Docker bridge to upgrade cht service containers",
   "main": "src/index.js",
   "scripts": {
-    "eslint": "eslint --color --cache",
+    "eslint": "eslint --color --cache ./src ./test",
     "test": "mocha ./test/unit/**/* --config ./test/unit/.mocharc.js",
     "coverage": "nyc npm run test"
   },
