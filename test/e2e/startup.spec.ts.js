@@ -16,7 +16,7 @@ describe('start up', () => {
   });
 
   afterEach(async () => {
-    await utils.serviceComposeCommand('down --remove-orphans');
+    await utils.serviceComposeCommand('down --remove-orphans -t 1');
   });
 
   it('should start fine with no docker compose files in the folder', async () => {
