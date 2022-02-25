@@ -2,9 +2,12 @@ const childProcess = require('child_process');
 
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 
-const composeCommand = (fileName, ...args) => {
-  const splitArgs = [`-f`, fileName, '-p', 'CHT' ];
+const composeCommand = (filePath, ...args) => {
+  const fileName = filePath.split('/').at(-1);
+  const splitArgs = [`-f`, filePath, '-p', fileName ];
   args.forEach(arg => splitArgs.push(...arg.split(' ')));
+
+  console.log(args);
 
   return new Promise((resolve, reject) => {
     const proc = childProcess.spawn(DOCKER_COMPOSE_CLI, splitArgs, { stdio: ['ignore', 'pipe', 'pipe'] });

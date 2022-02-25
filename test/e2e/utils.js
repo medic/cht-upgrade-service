@@ -3,7 +3,8 @@ const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 
-const DOCKER_COMPOSE_CLI = '/usr/local/bin/docker-compose';
+// const DOCKER_COMPOSE_CLI = '/usr/local/bin/docker-compose';
+const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = 'docker-compose.test.yml';
 
 const dockerComposeFolder = path.resolve(__dirname, '..', 'docker-compose');
@@ -22,7 +23,7 @@ const composeCommand = (file, ...args) => {
   console.log(DOCKER_COMPOSE_CLI, ...splitArgs);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, splitArgs, { cwd , stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = spawn(DOCKER_COMPOSE_CLI, splitArgs, { cwd , /*stdio: ['ignore', 'pipe', 'pipe']*/ });
     proc.on('error', (err) => reject(err));
 
     let err = '';
@@ -39,7 +40,7 @@ const composeCommand = (file, ...args) => {
       err += chunk;
     });
 
-    proc.on('exit', (exitCode) => {
+    proc.on('close', (exitCode) => {
       exitCode ? reject(err || `Closed with exit code ${exitCode}`) : resolve(data);
     });
   });
@@ -48,7 +49,11 @@ const composeCommand = (file, ...args) => {
 const serviceComposeCommand = (...args) => composeCommand(DOCKER_COMPOSE_FILE, ...args);
 const testComposeCommand = (fileName, ...args) => {
   const filePath = path.resolve(dockerComposeFolder, fileName);
-  return composeCommand(filePath, ...args);
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  return composeCommand(filePath, '-p', fileName, ...args);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -69,13 +74,15 @@ const setVersion = async (file, version) => {
 const waitUntilReady = async () => {
   // try for 5 seconds
   let keepTrying = true;
-  setTimeout(() => keepTrying = false, 5000);
+  const killTimeout = setTimeout(() => keepTrying = false, 5000);
+
   do {
     try {
-      return await fetchJson(module.exports.url);
+      await fetchJson(module.exports.url);
+      clearTimeout(killTimeout);
+      return;
     } catch (err) {
       // not ready yet
-      await new Promise(r => setTimeout(r, 100));
     }
   } while (keepTrying);
 };

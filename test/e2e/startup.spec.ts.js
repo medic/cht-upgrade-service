@@ -1,3 +1,4 @@
+const log = require('why-is-node-running') // should be your first require
 const utils = require('./utils');
 
 const up = async () => {
@@ -17,6 +18,12 @@ describe('start up', () => {
 
   afterEach(async () => {
     await utils.serviceComposeCommand('down --remove-orphans -t 1');
+    await utils.testComposeCommand('one-two.yml', 'down --remove-orphans -t 1');
+    await utils.testComposeCommand('three.yml', 'down --remove-orphans -t 1');
+  });
+
+  after(() => {
+    log();
   });
 
   it('should start fine with no docker compose files in the folder', async () => {

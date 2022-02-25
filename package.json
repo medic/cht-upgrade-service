@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
-    "unit": "mocha ./test/unit/**/*.js --config ./test/.mocharc.js --exit",
-    "e2e": "mocha ./test/e2e/**/*.js --config ./test/.mocharc.js --exit",
+    "unit": "mocha ./test/unit/**/*.js --config ./test/.mocharc.js",
+    "e2e": "mocha ./test/e2e/**/*.js --config ./test/.mocharc.js",
     "coverage": "nyc npm run unit"
   },
   "repository": {
@@ -32,6 +32,7 @@
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
-    "sinon": "^13.0.1"
+    "sinon": "^13.0.1",
+    "why-is-node-running": "^2.2.1"
   }
 }
