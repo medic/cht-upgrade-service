@@ -5,8 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
-    "test": "mocha ./test/unit/**/* --config ./test/unit/.mocharc.js",
-    "coverage": "nyc npm run test"
+    "unit": "mocha ./test/unit/**/* --config ./test/.mocharc.js",
+    "e2e": "mocha ./test/e2e/**/* --config ./test/.mocharc.js",
+    "coverage": "nyc npm run unit"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.9.0",
     "mocha": "^9.2.1",
+    "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
     "sinon": "^13.0.1"

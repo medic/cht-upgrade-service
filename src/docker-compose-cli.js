@@ -3,16 +3,16 @@ const childProcess = require('child_process');
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 
 const composeCommand = (fileName, ...args) => {
-  args = [`-f`, fileName, '-p', fileName, ...args];
+  const splitArgs = [`-f`, fileName, '-p', 'CHT' ];
+  args.forEach(arg => splitArgs.push(...arg.split(' ')));
 
   return new Promise((resolve, reject) => {
-    // -p is so we don't get the orphan warning every time we stop or up
-    const proc = childProcess.spawn(DOCKER_COMPOSE_CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = childProcess.spawn(DOCKER_COMPOSE_CLI, splitArgs, { stdio: ['ignore', 'pipe', 'pipe'] });
     proc.on('error', (err) => reject(err));
 
-    let err;
+    let err = '';
 
-    proc.stdout.on('data', console.log);
+    proc.stdout.on('data', (chunk) => console.log(chunk.toString()));
     proc.stderr.on('data', (chunk) => {
       chunk = chunk.toString();
       console.error(chunk);

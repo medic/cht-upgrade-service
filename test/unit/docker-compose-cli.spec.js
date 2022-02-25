@@ -26,7 +26,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'config' ],
+        [ '-f', filename, '-p', 'CHT', 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -43,7 +43,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'config' ],
+        [ '-f', filename, '-p', 'CHT', 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -60,7 +60,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'config' ],
+        [ '-f', filename, '-p', 'CHT', 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -80,7 +80,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'up', '-d', '--remove-orphans' ],
+        [ '-f', filename, '-p', 'CHT', 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -101,7 +101,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'up', '-d', '--remove-orphans' ],
+        [ '-f', filename, '-p', 'CHT', 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -116,7 +116,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'up', '-d', '--remove-orphans' ],
+        [ '-f', filename, '-p', 'CHT', 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -138,7 +138,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'pull' ],
+        [ '-f', filename, '-p', 'CHT', 'pull' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -159,7 +159,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'pull' ],
+        [ '-f', filename, '-p', 'CHT', 'pull' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
@@ -174,7 +174,7 @@ describe('docker-compose cli', () => {
       expect(childProcess.spawn.callCount).to.equal(1);
       expect(childProcess.spawn.args[0]).to.deep.equal([
         'docker-compose',
-        [ '-f', filename, '-p', filename, 'up', '-d', '--remove-orphans' ],
+        [ '-f', filename, '-p', 'CHT', 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
