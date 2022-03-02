@@ -27,9 +27,8 @@ const overwriteComposeFile = async (filePath, fileContents) => {
   await fs.promises.writeFile(filePath, fileContents, 'utf-8');
 };
 
-const startContainers = async (filePath, pull = false) => {
-  pull && await dockerComposeCli.pull(filePath);
-  await dockerComposeCli.up(filePath);
+const updateContainer = async (filePath) => {
+  await dockerComposeCli.pull(filePath);
 };
 
 const upgrade = async (fileName, fileContents) => {
@@ -45,17 +44,23 @@ const upgrade = async (fileName, fileContents) => {
   const filePath = path.join(dockerComposeFilePath, fileName);
 
   await overwriteComposeFile(filePath, fileContents);
-  await startContainers(filePath, true);
+  await updateContainer(filePath);
 };
 
 const startUp = async () => {
   const files = await fs.promises.readdir(dockerComposeFilePath);
+  const composeFiles = [];
   for (const file of files) {
     const filePath = path.join(dockerComposeFilePath, file);
     if (await dockerComposeCli.validate(filePath)) {
-      await startContainers(filePath);
+      composeFiles.push(filePath);
     }
   }
+  if (!composeFiles.length) {
+    return;
+  }
+
+  await dockerComposeCli.up(composeFiles);
 };
 
 module.exports = {

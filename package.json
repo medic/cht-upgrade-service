@@ -32,7 +32,6 @@
     "node-fetch": "^2.6.7",
     "nyc": "^15.1.0",
     "rewire": "^6.0.0",
-    "sinon": "^13.0.1",
-    "why-is-node-running": "^2.2.1"
+    "sinon": "^13.0.1"
   }
 }

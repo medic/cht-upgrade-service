@@ -28,12 +28,23 @@ const upgrade = async (req, res) => {
   }
 };
 
+const start = async (req, res) => {
+  try {
+    await containers.startUp();
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error while starting containers', err);
+    res.status(500).json({ error: true, reason: err.message });
+  }
+};
+
 const status = (req, res) => {
   res.json({ ok: true });
 };
 
 app.get('/', status);
 app.post('/upgrade', jsonParser, upgrade);
+app.post('/start', jsonParser, start);
 
 const listen = () => {
   app.listen(PORT);

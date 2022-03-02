@@ -5,10 +5,10 @@ const fs = require('fs');
 
 // const DOCKER_COMPOSE_CLI = '/usr/local/bin/docker-compose';
 const DOCKER_COMPOSE_CLI = 'docker-compose';
-const DOCKER_COMPOSE_FILE = 'docker-compose.test.yml';
+const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
-const dockerComposeFolder = path.resolve(__dirname, '..', 'docker-compose');
-const servicesFolder = path.resolve(__dirname, 'services');
+const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-compose');
+const servicesFolder = path.resolve(__dirname, '..', 'test-data', 'services');
 
 const cleanFolder = async () => {
   await fs.promises.rm(dockerComposeFolder, { recursive: true });
@@ -53,7 +53,7 @@ const testComposeCommand = (fileName, ...args) => {
     return;
   }
 
-  return composeCommand(filePath, '-p', fileName, ...args);
+  return composeCommand(filePath, ...args);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -87,6 +87,10 @@ const waitUntilReady = async () => {
   } while (keepTrying);
 };
 
+const startContainers = async () => {
+  await fetchJson(`${module.exports.url}start`, { method: 'POST' });
+};
+
 module.exports = {
   url: 'http://localhost:5100/',
   getPackageVersion:  'npm pkg get version',
@@ -98,4 +102,5 @@ module.exports = {
   cleanFolder,
   setVersion,
   waitUntilReady,
+  startContainers,
 };
