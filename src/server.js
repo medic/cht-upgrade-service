@@ -21,6 +21,7 @@ const upgrade = async (req, res) => {
       console.log(`${fileName} upgrade was successful`);
       response[fileName] = { ok: true };
     }
+    await containers.startUp();
     res.json(response);
   } catch (err) {
     console.error('Error while upgrading', err);

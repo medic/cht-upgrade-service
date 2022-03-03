@@ -5,6 +5,5 @@ module.exports = {
   delay: false,
   diff: true,
   reporter: 'spec',
-  require: ['./test/.mocha-hooks.js'],
-  timeout: 70000,
+  require: ['./test/unit/.mocha-hooks.js'],
 }

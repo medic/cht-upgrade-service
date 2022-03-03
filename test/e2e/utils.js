@@ -62,12 +62,19 @@ const fetchJson = async (url, opts = {}) => {
   opts.method = opts.method || (opts.body ? 'POST' : 'GET');
 
   const response = await fetch(url, opts);
-  return await response.json();
+  if (response.ok) {
+    return await response.json();
+  }
+  return Promise.reject(response);
 };
 
-const setVersion = async (file, version) => {
+const setVersion = async (file, version, write = true) => {
   const contents = await fs.promises.readFile(path.resolve(servicesFolder, file), 'utf-8');
   const contentsWithVersion = contents.replace(/<version>/g, version);
+  if (!write) {
+    return contentsWithVersion;
+  }
+
   await fs.promises.writeFile(path.resolve(dockerComposeFolder, file), contentsWithVersion);
 };
 
@@ -91,9 +98,26 @@ const startContainers = async () => {
   await fetchJson(`${module.exports.url}start`, { method: 'POST' });
 };
 
+const upgradeContainers = async (payload) => {
+  const body = { 'docker-compose': payload };
+  return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
+};
+
+const up = async (start = true) => {
+  await serviceComposeCommand('up -d');
+  await waitUntilReady();
+  start && await startContainers();
+};
+
+const getServiceVersion = async (file, service) => {
+  const version = await testComposeCommand(file, 'exec -T', service, 'npm pkg get version');
+  console.log(version);
+  return version && version.replace(/[\"\n]/g, '');
+};
+
 module.exports = {
   url: 'http://localhost:5100/',
-  getPackageVersion:  'npm pkg get version',
+  getServiceVersion,
 
   composeCommand,
   serviceComposeCommand,
@@ -103,4 +127,6 @@ module.exports = {
   setVersion,
   waitUntilReady,
   startContainers,
+  upgradeContainers,
+  up,
 };

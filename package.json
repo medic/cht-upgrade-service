@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
-    "unit": "mocha ./test/unit/**/*.js --config ./test/.mocharc.js",
-    "e2e": "mocha ./test/e2e/**/*.js --config ./test/.mocharc.js",
+    "unit": "mocha ./test/unit/**/*.js --config ./test/unit/.mocharc.js",
+    "e2e": "mocha ./test/e2e/**/*.js --config ./test/e2e/.mocharc.js",
     "coverage": "nyc npm run unit"
   },
   "repository": {

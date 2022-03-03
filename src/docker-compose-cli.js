@@ -10,8 +10,6 @@ const composeCommand = (filePaths, ...params) => {
   filePaths.forEach(filePath => args.push('-f', filePath));
   params.forEach(param => args.push(...param.split(' ')));
 
-  console.log(args);
-
   return new Promise((resolve, reject) => {
     const proc = childProcess.spawn(DOCKER_COMPOSE_CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
     proc.on('error', (err) => reject(err));
