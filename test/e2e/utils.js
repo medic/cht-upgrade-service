@@ -15,6 +15,22 @@ const cleanFolder = async () => {
   await fs.promises.mkdir(dockerComposeFolder);
 };
 
+const runScript = (file, ...args) => {
+  const scriptPath = path.resolve(__dirname, '..', 'test-data', 'scripts', file);
+  const cwd = path.resolve(__dirname, '..', 'test-data', 'scripts');
+  return new Promise((resolve, reject) => {
+    const proc = spawn(scriptPath, args, { cwd });
+    let stderr = '';
+    let stdout = '';
+    proc.on('error', (err) => reject(err));
+    proc.stdout.on('data', (chunk) => stdout += chunk.toString());
+    proc.stderr.on('data', (chunk) => stderr += chunk.toString());
+    proc.on('close', (exitCode) => {
+      exitCode ? reject(stderr) : resolve(stdout);
+    });
+  });
+};
+
 const composeCommand = (file, ...args) => {
   const splitArgs = [`-f`, file ];
   args.forEach(arg => splitArgs.push(...arg.split(' ')));
@@ -23,7 +39,7 @@ const composeCommand = (file, ...args) => {
   console.log(DOCKER_COMPOSE_CLI, ...splitArgs);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, splitArgs, { cwd , /*stdio: ['ignore', 'pipe', 'pipe']*/ });
+    const proc = spawn(DOCKER_COMPOSE_CLI, splitArgs, { cwd  });
     proc.on('error', (err) => reject(err));
 
     let err = '';
@@ -65,7 +81,8 @@ const fetchJson = async (url, opts = {}) => {
   if (response.ok) {
     return await response.json();
   }
-  return Promise.reject(response);
+
+  throw await response.json();
 };
 
 const setVersion = async (file, version, write = true) => {
@@ -106,19 +123,22 @@ const upgradeContainers = async (payload) => {
 const up = async (start = true) => {
   await serviceComposeCommand('up -d');
   await waitUntilReady();
-  start && await startContainers();
+  if (!start) {
+    return;
+  }
+  return await startContainers();
 };
 
 const getServiceVersion = async (file, service) => {
   const version = await testComposeCommand(file, 'exec -T', service, 'npm pkg get version');
-  console.log(version);
-  return version && version.replace(/[\"\n]/g, '');
+  return version && version.replace(/["\n]/g, '');
 };
 
 module.exports = {
   url: 'http://localhost:5100/',
   getServiceVersion,
 
+  runScript,
   composeCommand,
   serviceComposeCommand,
   testComposeCommand,

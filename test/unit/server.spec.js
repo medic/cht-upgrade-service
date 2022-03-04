@@ -66,6 +66,24 @@ describe('server', () => {
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'booom' }]]);
     });
 
+    it('should forward the whole error if no message', async () => {
+      req.body = {
+        'docker-compose': {
+          one: 'docker 1',
+        },
+      };
+      sinon.stub(containers, 'upgrade');
+      containers.upgrade.rejects(new Error('omg this is a string'));
+
+      await server.__get__('upgrade')(req, res);
+
+      expect(containers.upgrade.callCount).to.equal(1);
+      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1']);
+
+      expect(res.status.args).to.deep.equal([[500]]);
+      expect(res.json.args).to.deep.equal([[{ error: true, reason: 'omg this is a string' }]]);
+    });
+
     it('should try to upgrade multiple docker-compose files', async () => {
       req.body = {
         'docker-compose': {
@@ -92,7 +110,7 @@ describe('server', () => {
       }]);
     });
 
-    it('should try to upgade single docker-compose file', async () => {
+    it('should try to upgrade single docker-compose file', async () => {
       req.body = {
         'docker-compose': {
           'cht-compose.yml': 'the contents',
@@ -110,6 +128,52 @@ describe('server', () => {
       expect(res.json.args[0]).to.deep.equal([{
         'cht-compose.yml': { ok: true },
       }]);
+    });
+  });
+
+  describe('start', () => {
+    it('should start up containers', async () => {
+      sinon.stub(containers, 'startUp').resolves();
+
+      await server.__get__('start')(req, res);
+
+      expect(res.status.callCount).to.equal(0);
+      expect(res.json.callCount).to.equal(1);
+      expect(res.json.args[0]).to.deep.equal([{ ok: true }]);
+      expect(containers.startUp.callCount).to.equal(1);
+    });
+
+    it('should return error if startup fails', async () => {
+      sinon.stub(containers, 'startUp').rejects({ message: 'a reason' });
+
+      await server.__get__('start')(req, res);
+
+      expect(containers.startUp.callCount).to.equal(1);
+
+      expect(res.status.args).to.deep.equal([[500]]);
+      expect(res.json.args).to.deep.equal([[{ error: true, reason: 'a reason' }]]);
+
+    });
+
+    it('should return error if startup fails with an error', async () => {
+      sinon.stub(containers, 'startUp').rejects(new Error('reason is a string'));
+
+      await server.__get__('start')(req, res);
+
+      expect(containers.startUp.callCount).to.equal(1);
+
+      expect(res.status.args).to.deep.equal([[500]]);
+      expect(res.json.args).to.deep.equal([[{ error: true, reason: 'reason is a string' }]]);
+    });
+  });
+
+  describe('listen', () => {
+    it('should start listening', () => {
+      const app = { listen: sinon.stub() };
+      server.__set__('app', app);
+
+      server.listen();
+      expect(app.listen.args).to.deep.equal([[5100]]);
     });
   });
 });

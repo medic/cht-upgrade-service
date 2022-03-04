@@ -19,8 +19,7 @@ describe('containers lib', () => {
         ['/docker-compose/file2'],
       ]);
       expect(dockerComposeCli.up.args).to.deep.equal([
-        ['/docker-compose/file1'],
-        ['/docker-compose/file2'],
+        [['/docker-compose/file1', '/docker-compose/file2']]
       ]);
     });
 
@@ -40,8 +39,7 @@ describe('containers lib', () => {
         ['/docker-compose/file3'],
       ]);
       expect(dockerComposeCli.up.args).to.deep.equal([
-        ['/docker-compose/file1'],
-        ['/docker-compose/file3'],
+        [['/docker-compose/file1', '/docker-compose/file3']]
       ]);
     });
 
@@ -58,7 +56,7 @@ describe('containers lib', () => {
         ['/docker-compose/docker-compose.cht.yml'],
       ]);
       expect(dockerComposeCli.up.args).to.deep.equal([
-        ['/docker-compose/docker-compose.cht.yml'],
+        [['/docker-compose/docker-compose.cht.yml']]
       ]);
     });
 
@@ -71,15 +69,16 @@ describe('containers lib', () => {
 
       expect(dockerComposeCli.validate.args).to.deep.equal([
         ['/docker-compose/file1'],
+        ['/docker-compose/file2'],
       ]);
       expect(dockerComposeCli.up.args).to.deep.equal([
-        ['/docker-compose/file1'],
+        [['/docker-compose/file1', '/docker-compose/file2']],
       ]);
     });
   });
 
   describe('upgrade', () => {
-    it('should validate, overwrite compose file, do pull and up', async () => {
+    it('should validate, overwrite compose file and do a pull', async () => {
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
@@ -100,7 +99,6 @@ describe('containers lib', () => {
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
-      expect(dockerComposeCli.up.args).to.deep.equal([[`/docker-compose/${filename}`]]);
     });
 
     it('should work with already exiting temp folder', async () => {
@@ -109,7 +107,6 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
-      sinon.stub(dockerComposeCli, 'up').resolves(true);
 
       const filename = 'docker.file';
       const contents = 'config';
@@ -124,7 +121,6 @@ describe('containers lib', () => {
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
-      expect(dockerComposeCli.up.args).to.deep.equal([[`/docker-compose/${filename}`]]);
     });
 
     it('should throw error if filename is empty', async () => {
@@ -173,25 +169,6 @@ describe('containers lib', () => {
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
-    });
-
-    it('should throw error if up fails', async () => {
-      sinon.stub(fs.promises, 'mkdir').resolves();
-      sinon.stub(fs.promises, 'writeFile').resolves();
-      sinon.stub(fs.promises, 'unlink');
-      sinon.stub(dockerComposeCli, 'validate').resolves(true);
-      sinon.stub(dockerComposeCli, 'pull').resolves(true);
-      sinon.stub(dockerComposeCli, 'up').rejects(new Error('this error'));
-
-      const filename = 'docker-compose.file';
-      const contents = 'the contents';
-
-      await expect(containers.upgrade(filename, contents))
-        .to.be.rejectedWith('this error');
-
-      expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
-      expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
-      expect(dockerComposeCli.up.args).to.deep.equal([[`/docker-compose/${filename}`]]);
     });
   });
 });

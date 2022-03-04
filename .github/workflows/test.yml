@@ -27,6 +27,4 @@ jobs:
         with:
           node-version: 16.x
       - run: npm ci
-      - run: ./test/e2e/test-data/scripts/registry.sh
-      - run: ./test/e2e/test-data/scripts/publish.sh
       - run: npm run e2e
