@@ -75,6 +75,26 @@ describe('containers lib', () => {
         [['/docker-compose/file1', '/docker-compose/file2']],
       ]);
     });
+
+    it('should not call up when no compose files are found', async () => {
+      sinon.stub(fs.promises, 'readdir').resolves([]);
+      await containers.startUp();
+    });
+
+    it('should not call up when no compose files are valid', async () => {
+      sinon.stub(fs.promises, 'readdir').resolves(['file1', 'file2', 'file3']);
+      sinon.stub(dockerComposeCli, 'validate').resolves(false);
+
+      await containers.startUp();
+
+      expect(fs.promises.readdir.callCount).to.equal(1);
+      expect(fs.promises.readdir.args[0]).to.deep.equal(['/docker-compose']);
+      expect(dockerComposeCli.validate.args).to.deep.equal([
+        ['/docker-compose/file1'],
+        ['/docker-compose/file2'],
+        ['/docker-compose/file3'],
+      ]);
+    });
   });
 
   describe('upgrade', () => {
