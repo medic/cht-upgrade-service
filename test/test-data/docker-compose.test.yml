@@ -7,5 +7,5 @@ services:
       - "5100:5100"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/diana/projects/cht-upgrade-service/test/test-data/docker-compose:/docker-compose
+      - ./docker-compose:/docker-compose
     command: node /app/src/index.js
