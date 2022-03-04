@@ -66,6 +66,26 @@ describe('server', () => {
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'booom' }]]);
     });
 
+    it('should respond with 500 when startup fails', async () => {
+      req.body = {
+        'docker-compose': {
+          one: 'docker 1',
+          two: 'docker 2',
+        },
+      };
+      sinon.stub(containers, 'upgrade').resolves();
+      sinon.stub(containers, 'startUp').rejects({ message: 'booom' });
+
+      await server.__get__('upgrade')(req, res);
+
+      expect(containers.upgrade.callCount).to.equal(2);
+      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1']);
+      expect(containers.upgrade.args[1]).to.deep.equal(['two', 'docker 2']);
+
+      expect(res.status.args).to.deep.equal([[500]]);
+      expect(res.json.args).to.deep.equal([[{ error: true, reason: 'booom' }]]);
+    });
+
     it('should forward the whole error if no message', async () => {
       req.body = {
         'docker-compose': {
@@ -93,6 +113,7 @@ describe('server', () => {
         },
       };
       sinon.stub(containers, 'upgrade').resolves();
+      sinon.stub(containers, 'startUp').resolves();
 
       await server.__get__('upgrade')(req, res);
 
@@ -100,6 +121,7 @@ describe('server', () => {
       expect(containers.upgrade.args[0]).to.deep.equal(['docker-compose.cht.yml', 'contents 1']);
       expect(containers.upgrade.args[1]).to.deep.equal(['something-something', 'contents 2']);
       expect(containers.upgrade.args[2]).to.deep.equal(['rapidpro?', 'contents 3']);
+      expect(containers.startUp.callCount).to.equal(1);
 
       expect(res.status.callCount).to.equal(0);
       expect(res.json.callCount).to.equal(1);
@@ -117,11 +139,13 @@ describe('server', () => {
         },
       };
       sinon.stub(containers, 'upgrade').resolves();
+      sinon.stub(containers, 'startUp').resolves();
 
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(1);
       expect(containers.upgrade.args[0]).to.deep.equal(['cht-compose.yml', 'the contents']);
+      expect(containers.startUp.callCount).to.equal(1);
 
       expect(res.status.callCount).to.equal(0);
       expect(res.json.callCount).to.equal(1);
