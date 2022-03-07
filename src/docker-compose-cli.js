@@ -31,7 +31,7 @@ const composeCommand = (filePaths, ...params) => {
 
 const pull = (fileName) => composeCommand(fileName, 'pull');
 
-const up = (fileNames) => composeCommand(fileNames, 'up', '-d', '--remove-orphans');
+const up = (fileNames) => composeCommand(fileNames, 'up -d --remove-orphans');
 
 const validate = async (fileName) => {
   try {

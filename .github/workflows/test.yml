@@ -13,8 +13,7 @@ jobs:
         with:
           node-version: 16.x
       - run: npm ci
-      - run: npm run eslint
-      - run: npm run coverage
+      - run: npm run test
 
   e2e-tests:
     needs: unit

@@ -18,7 +18,6 @@ const upgrade = async (req, res) => {
   try {
     for (const [fileName, fileContents] of payload) {
       await containers.upgrade(fileName, fileContents);
-      console.log(`${fileName} upgrade was successful`);
       response[fileName] = { ok: true };
     }
     await containers.startUp();
