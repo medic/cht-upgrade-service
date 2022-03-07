@@ -34,4 +34,5 @@ build_version()
   cd ../
 }
 
+mkdir -p "../docker-compose"
 main
