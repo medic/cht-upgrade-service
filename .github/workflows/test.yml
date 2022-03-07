@@ -25,6 +25,5 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-      - run: docker-compose -v
       - run: npm ci
       - run: npm run e2e

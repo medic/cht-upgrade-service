@@ -6,7 +6,6 @@ const fs = require('fs');
 let env;
 const setEnv = (newEnv) => env = newEnv;
 
-// const DOCKER_COMPOSE_CLI = '/usr/local/bin/docker-compose';
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
@@ -39,12 +38,11 @@ const composeCommand = (file, ...params) => {
     ...[`-f`, file ],
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
-  const cwd = path.join(__dirname, '../');
 
   console.log(DOCKER_COMPOSE_CLI, ...args);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, args, { cwd , env });
+    const proc = spawn(DOCKER_COMPOSE_CLI, args, { env: { ...process.env, ...env } });
     proc.on('error', (err) => reject(err));
 
     let err = '';
