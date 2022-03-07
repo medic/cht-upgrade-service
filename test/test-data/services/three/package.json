@@ -1,4 +1,8 @@
 {
   "name": "three",
-  "version": "3.0.0"
+  "version": "3.0.0",
+  "scripts": {
+    "foo": "echo $FOO",
+    "bar": "echo $BAR"
+  }
 }

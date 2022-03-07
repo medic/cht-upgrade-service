@@ -9,3 +9,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-compose:/docker-compose
     command: node /app/src/index.js
+    environment:
+      - FOO
+      - BAR

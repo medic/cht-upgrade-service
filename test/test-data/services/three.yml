@@ -4,3 +4,6 @@ services:
   three:
     image: localhost:5000/upgrade/three:<version>
     container_name: three
+    environment:
+      - FOO
+      - BAR

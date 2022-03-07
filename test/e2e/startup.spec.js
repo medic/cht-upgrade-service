@@ -62,4 +62,14 @@ describe('start up', () => {
       'manifest for localhost:5000/upgrade/one:10.0.0 not found: manifest unknown: manifest unknown'
     );
   });
+
+  it('should pass environment variables to containers', async () => {
+    await utils.setVersion('one-two.yml', '1.0.0');
+    await utils.setVersion('three.yml', '1.0.0');
+
+    await utils.up(true, { FOO: 'foovalue', BAR: 'barval' });
+
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'FOO')).to.deep.equal('foovalue');
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'BAR')).to.deep.equal('barval');
+  });
 });

@@ -7,7 +7,7 @@ const composeCommand = (filePaths, ...params) => {
 
   const args = [
     ...filePaths.map(filePath => (['-f', filePath])),
-    ...params.map(param => param.split(' ')),
+    ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
 
   return new Promise((resolve, reject) => {

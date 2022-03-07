@@ -16,6 +16,10 @@ module.exports = {
       await utils.serviceComposeCommand('down --remove-orphans -t 1');
     },
 
+    beforeEach: () => {
+      utils.setEnv({});
+    },
+
     afterEach: async function () {
       if (this.currentTest.state === 'failed') {
         const logs = await utils.serviceComposeCommand('logs');

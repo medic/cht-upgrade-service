@@ -3,6 +3,9 @@ const fetch = require('node-fetch');
 const path = require('path');
 const fs = require('fs');
 
+let env;
+const setEnv = (newEnv) => env = newEnv;
+
 // const DOCKER_COMPOSE_CLI = '/usr/local/bin/docker-compose';
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
@@ -31,15 +34,17 @@ const runScript = (file, ...args) => {
   });
 };
 
-const composeCommand = (file, ...args) => {
-  const splitArgs = [`-f`, file ];
-  args.forEach(arg => splitArgs.push(...arg.split(' ')));
+const composeCommand = (file, ...params) => {
+  const args = [
+    ...[`-f`, file ],
+    ...params.filter(param => param).map(param => param.split(' ')),
+  ].flat();
   const cwd = path.join(__dirname, '../');
 
-  console.log(DOCKER_COMPOSE_CLI, ...splitArgs);
+  console.log(DOCKER_COMPOSE_CLI, ...args);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, splitArgs, { cwd  });
+    const proc = spawn(DOCKER_COMPOSE_CLI, args, { cwd , env });
     proc.on('error', (err) => reject(err));
 
     let err = '';
@@ -120,8 +125,10 @@ const upgradeContainers = async (payload) => {
   return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
 };
 
-const up = async (start = true) => {
+const up = async (start = true, env) => {
+  setEnv(env);
   await serviceComposeCommand('up -d');
+  setEnv();
   await waitUntilReady();
   if (!start) {
     return;
@@ -132,6 +139,16 @@ const up = async (start = true) => {
 const getServiceVersion = async (file, service) => {
   const version = await testComposeCommand(file, 'exec -T', service, 'npm pkg get version');
   return version && version.replace(/["\n]/g, '');
+};
+
+const getServiceEnv = async (file, service, envVarName) => {
+  const output = await testComposeCommand(file, 'exec -T', service, `npm run ${envVarName.toLowerCase()}`);
+  // output looks like (excluding empty lines)
+  // one@3.0.0 foo
+  // echo $FOO
+  // foovalue
+  const lines = output.split('\n').filter(line => line);
+  return lines[2];
 };
 
 module.exports = {
@@ -149,4 +166,6 @@ module.exports = {
   startContainers,
   upgradeContainers,
   up,
+  getServiceEnv,
+  setEnv,
 };

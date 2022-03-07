@@ -205,4 +205,22 @@ describe('upgrade', () => {
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('2.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('2.0.0');
   });
+
+  it('should pass environment variables to containers', async () => {
+    await utils.setVersion('one-two.yml', '1.0.0');
+    await utils.setVersion('three.yml', '1.0.0');
+
+    await utils.up(true, { FOO: 'i_am_foo', BAR: 'i_am_bar' });
+
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'FOO')).to.deep.equal('i_am_foo');
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'BAR')).to.deep.equal('i_am_bar');
+
+    await utils.upgradeContainers({
+      'one-two.yml': await utils.setVersion('one-two.yml', '3.0.0', false),
+      'three.yml': await utils.setVersion('three.yml', '3.0.0', false),
+    });
+
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'FOO')).to.deep.equal('i_am_foo');
+    expect(await utils.getServiceEnv('one-two.yml', 'one', 'BAR')).to.deep.equal('i_am_bar');
+  });
 });
