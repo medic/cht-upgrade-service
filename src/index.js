@@ -1,2 +1,1 @@
-const server = require('./server');
-server.listen();
+require('./server').listen();

@@ -3,22 +3,14 @@ const fs = require('fs');
 
 const dockerComposeCli = require('./docker-compose-cli');
 const dockerComposeFilePath = path.resolve('/docker-compose');
-const tempFolder = path.resolve('/temp');
-
-const makeTempFolder = async () => {
-  try {
-    await fs.promises.mkdir(tempFolder);
-  } catch (err) {
-    // already exists
-  }
-};
 
 const validComposeFile = async (contents) => {
-  await makeTempFolder();
+  const tempFolder = await fs.promises.mkdtemp('docker-compose');
   const tempFilePath = path.join(tempFolder, 'temp.yml');
   await fs.promises.writeFile(tempFilePath, contents, 'utf-8');
   const valid = await dockerComposeCli.validate(tempFilePath);
   await fs.promises.unlink(tempFilePath);
+  await fs.promises.rmdir(tempFolder);
 
   return valid;
 };

@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
-    "unit": "mocha ./test/unit/**/*.js --config ./test/unit/.mocharc.js",
+    "unit": "mocha ./test/unit/**/*.js --config ./test/unit/mocharc.js",
     "coverage": "nyc npm run unit",
     "test": "npm run eslint && npm run coverage",
-    "e2e": "mocha ./test/e2e/**/*.js --config ./test/e2e/.mocharc.js"
+    "e2e": "mocha ./test/e2e/**/*.js --config ./test/e2e/mocharc.js"
   },
   "engines": {
     "node": ">=16.12.0",
@@ -19,7 +19,7 @@
     "url": "git+https://github.com/dianabarsan/cht-upgrade-service.git"
   },
   "author": "Diana Barsan",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "bugs": {
     "url": "https://github.com/dianabarsan/cht-upgrade-service/issues"
   },

@@ -44,11 +44,11 @@ const status = (req, res) => {
 
 app.get('/', status);
 app.post('/upgrade', jsonParser, upgrade);
-app.post('/start', jsonParser, start);
+app.post('/start', start);
 
 const listen = () => {
   app.listen(PORT);
-  console.log('listening on port 5100');
+  console.log(`Listening on port ${PORT}`);
 };
 
 module.exports = {

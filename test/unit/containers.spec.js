@@ -99,9 +99,10 @@ describe('containers lib', () => {
 
   describe('upgrade', () => {
     it('should validate, overwrite compose file and do a pull', async () => {
-      sinon.stub(fs.promises, 'mkdir').resolves();
+      sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
+      sinon.stub(fs.promises, 'rmdir');
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
       sinon.stub(dockerComposeCli, 'up').resolves(true);
@@ -111,33 +112,12 @@ describe('containers lib', () => {
 
       await containers.upgrade(filename, contents);
 
-      expect(fs.promises.mkdir.args).to.deep.equal([['/temp']]);
+      expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
       expect(fs.promises.writeFile.callCount).to.deep.equal(2);
-      expect(fs.promises.writeFile.args[0]).to.deep.equal(['/temp/temp.yml', contents, 'utf-8']);
-      expect(dockerComposeCli.validate.args).to.deep.equal([['/temp/temp.yml']]);
-      expect(fs.promises.unlink.args).to.deep.equal([['/temp/temp.yml']]);
-
-      expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
-      expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
-    });
-
-    it('should work with already exiting temp folder', async () => {
-      sinon.stub(fs.promises, 'mkdir').rejects();
-      sinon.stub(fs.promises, 'writeFile').resolves();
-      sinon.stub(fs.promises, 'unlink');
-      sinon.stub(dockerComposeCli, 'validate').resolves(true);
-      sinon.stub(dockerComposeCli, 'pull').resolves(true);
-
-      const filename = 'docker.file';
-      const contents = 'config';
-
-      await containers.upgrade(filename, contents);
-
-      expect(fs.promises.mkdir.args).to.deep.equal([['/temp']]);
-      expect(fs.promises.writeFile.callCount).to.deep.equal(2);
-      expect(fs.promises.writeFile.args[0]).to.deep.equal(['/temp/temp.yml', contents, 'utf-8']);
-      expect(dockerComposeCli.validate.args).to.deep.equal([['/temp/temp.yml']]);
-      expect(fs.promises.unlink.args).to.deep.equal([['/temp/temp.yml']]);
+      expect(fs.promises.writeFile.args[0]).to.deep.equal(['/path/to/temp/temp.yml', contents, 'utf-8']);
+      expect(dockerComposeCli.validate.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.unlink.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.rmdir.args).to.deep.equal([['/path/to/temp']]);
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
