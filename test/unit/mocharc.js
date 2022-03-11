@@ -6,4 +6,4 @@ module.exports = {
   diff: true,
   reporter: 'spec',
   require: ['./test/unit/mocha-hooks.js'],
-}
+};

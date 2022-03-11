@@ -7,4 +7,4 @@ module.exports = {
   reporter: 'spec',
   require: ['./test/e2e/mocha-hooks.js'],
   timeout: 70000,
-}
+};
