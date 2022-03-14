@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  one:
+    image: localhost:5000/upgrade/one:<version>
+    container_name: one
+    environment:
+      - FOO
+      - BAR
+
+  two:
+    image: localhost:5000/upgrade/two:<version>
+    container_name: two
+    environment:
+      - FOO
+      - BAR
