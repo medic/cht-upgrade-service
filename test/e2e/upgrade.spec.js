@@ -1,10 +1,6 @@
 const utils = require('./utils');
 
 describe('upgrade', () => {
-  beforeEach(async () => {
-    await utils.cleanFolder();
-  });
-
   it('should upgrade one docker-compose file', async () => {
     await utils.setVersion('one-two.yml', '1.0.0');
     await utils.up();
@@ -128,7 +124,7 @@ describe('upgrade', () => {
   });
 
   it('should upgrade without previously running containers', async () => {
-    await utils.up(false);
+    await utils.up();
 
     const response = await utils.upgradeContainers({
       'one-two.yml': await utils.setVersion('one-two.yml', '3.0.0', false),
@@ -144,7 +140,7 @@ describe('upgrade', () => {
   });
 
   it('should return error when docker compose file is invalid', async () => {
-    await utils.up(false);
+    await utils.up();
     const response = await expect(utils.upgradeContainers({
       'one-two.yml': 'this is definitely not valid yml'
     })).to.be.rejected;
@@ -159,7 +155,7 @@ describe('upgrade', () => {
   });
 
   it('should return error when payload is incomplete', async () => {
-    await utils.up(false);
+    await utils.up();
 
     const response = await expect(utils.upgradeContainers()).to.be.rejected;
     expect(response).to.deep.equal({
@@ -169,7 +165,7 @@ describe('upgrade', () => {
   });
 
   it('should return error when image was not found', async () => {
-    await utils.up(false);
+    await utils.up();
 
     const response = await expect(utils.upgradeContainers({
       'one-two.yml': await utils.setVersion('one-two.yml', '13.0.0', false),

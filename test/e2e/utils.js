@@ -33,9 +33,10 @@ const runScript = (file, ...args) => {
   });
 };
 
-const composeCommand = (file, ...params) => {
+const composeCommand = (files, ...params) => {
+  files = Array.isArray(files) ? files : [files];
   const args = [
-    ...[`-f`, file ],
+    ...files.map(file => (['-f', file])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
 
@@ -66,13 +67,17 @@ const composeCommand = (file, ...params) => {
 };
 
 const serviceComposeCommand = (...args) => composeCommand(DOCKER_COMPOSE_FILE, ...args);
-const testComposeCommand = (fileName, ...args) => {
-  const filePath = path.resolve(dockerComposeFolder, fileName);
-  if (!fs.existsSync(filePath)) {
+const testComposeCommand = (fileNames, ...args) => {
+  fileNames = Array.isArray(fileNames) ? fileNames : [fileNames];
+  const filePaths = fileNames
+    .map(fileName => path.resolve(dockerComposeFolder, fileName))
+    .filter(filePath => fs.existsSync(filePath));
+
+  if (!filePaths.length) {
     return;
   }
 
-  return composeCommand(filePath, ...args);
+  return composeCommand(filePaths, ...args);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -123,15 +128,50 @@ const upgradeContainers = async (payload) => {
   return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
 };
 
-const up = async (start = true, env) => {
+const up = async (waitForStart = true, env) => {
   setEnv(env);
   await serviceComposeCommand('up -d');
   setEnv();
   await waitUntilReady();
-  if (!start) {
+  if (waitForStart) {
+    return await waitForServiceContainersUp();
+  }
+};
+
+const waitForServiceContainersUp = async () => {
+  // try for 5 seconds
+  let keepTrying = true;
+  const killTimeout = setTimeout(() => keepTrying = false, 5000);
+  const files = await fs.promises.readdir(dockerComposeFolder);
+
+  if (!files.length) {
     return;
   }
-  return await startContainers();
+
+  do {
+    const up = await allContainersUp(files);
+    if (up) {
+      clearTimeout(killTimeout);
+      return;
+    }
+  } while (keepTrying);
+};
+
+
+const allContainersUp = async (files) => {
+  const services = (await testComposeCommand(files, 'config --services')).split('\n').filter(i => i);
+  const containers = (await testComposeCommand(files, 'ps -q')).split('\n').filter(i => i);
+  if (containers.length !== services.length) {
+    return false;
+  }
+  // services are responding too
+  for (const service of services) {
+    try {
+      await getServiceVersion(files, service);
+    } catch (err) {
+      return false;
+    }
+  }
 };
 
 const getServiceVersion = async (file, service) => {

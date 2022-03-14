@@ -9,6 +9,8 @@ global.expect = chai.expect;
 module.exports = {
   mochaHooks: {
     beforeAll: async () => {
+      await utils.cleanFolder();
+
       await utils.runScript('registry.sh');
       await utils.runScript('publish.sh');
 
@@ -16,14 +18,14 @@ module.exports = {
       await utils.serviceComposeCommand('down --remove-orphans -t 1');
     },
 
-    beforeEach: () => {
+    beforeEach: async () => {
       utils.setEnv({});
+      await utils.cleanFolder();
     },
 
     afterEach: async function () {
       if (this.currentTest.state === 'failed') {
-        const logs = await utils.serviceComposeCommand('logs');
-        console.log(logs);
+        await utils.serviceComposeCommand('logs');
       }
       await utils.serviceComposeCommand('down --remove-orphans -t 1');
       await utils.testComposeCommand('one-two.yml', 'down --remove-orphans -t 1');
