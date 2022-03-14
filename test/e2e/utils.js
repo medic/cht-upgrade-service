@@ -13,8 +13,12 @@ const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-c
 const servicesFolder = path.resolve(__dirname, '..', 'test-data', 'services');
 
 const cleanFolder = async () => {
-  await fs.promises.rm(dockerComposeFolder, { recursive: true });
-  await fs.promises.mkdir(dockerComposeFolder);
+  try {
+    await fs.promises.rm(dockerComposeFolder, { recursive: true });
+    await fs.promises.mkdir(dockerComposeFolder);
+  } catch (err) {
+    console.warn('Error when trying to clean up docker-compose test folder', err);
+  }
 };
 
 const runScript = (file, ...args) => {
