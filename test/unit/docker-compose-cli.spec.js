@@ -133,7 +133,7 @@ describe('docker-compose cli', () => {
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
       process.events.error({ an: 'error' });
-      await expect(result).to.be.rejectedWith({ an: 'error' });
+      await expect(result).to.be.rejected.and.eventually.deep.equal({ an: 'error' });
     });
 
     it('should reject on non-zero response code ', async () => {
@@ -191,7 +191,7 @@ describe('docker-compose cli', () => {
       ]);
       expect(process.events).to.have.keys(['error', 'exit']);
       process.events.error({ error: 'boom' });
-      await expect(result).to.be.rejectedWith({ error: 'boom' });
+      await expect(result).to.be.rejected.and.eventually.deep.equal({ error: 'boom' });
     });
 
     it('should reject on non-zero response code ', async () => {
