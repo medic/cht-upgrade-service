@@ -1,5 +1,5 @@
 {
-  "name": "cht-upgrade-service",
+  "name": "@medic/cht-upgrade-service",
   "version": "1.0.0",
   "description": "Docker bridge to upgrade cht service containers",
   "main": "src/index.js",
@@ -16,14 +16,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dianabarsan/cht-upgrade-service.git"
+    "url": "git+https://github.com/medic/cht-upgrade-service.git"
   },
   "author": "Diana Barsan",
   "license": "AGPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/dianabarsan/cht-upgrade-service/issues"
+    "url": "https://github.com/medic/cht-upgrade-service/issues"
   },
-  "homepage": "https://github.com/dianabarsan/cht-upgrade-service#readme",
+  "homepage": "https://github.com/medic/cht-upgrade-service#readme",
   "dependencies": {
     "body-parser": "^1.19.2",
     "express": "^4.17.3"
