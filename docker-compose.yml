@@ -5,7 +5,7 @@ services:
     build: .
     container_name: cht-upgrade-service
     ports:
-      - "5100:5100"
+      - "5008:5008"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_CONFIG_PATH}:/config

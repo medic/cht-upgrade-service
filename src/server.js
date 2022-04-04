@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const jsonParser = bodyParser.json({ limit: '32mb' });
-const PORT = 5100;
+const PORT = 5008;
 process.env.UPGRADE_SERVICE_URL = `http://cht-upgrade-service:${PORT}`;
 
 const app = express();

@@ -1,10 +1,10 @@
-version: '3'
+version: '3.9'
 services:
-  cht-upgrade-service:
+  cht-upgrade-service-test:
     build: ../../
-    container_name: cht-upgrade-service
+    container_name: cht-upgrade-service-test
     ports:
-      - "5100:5100"
+      - "5008:5008"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-compose:/docker-compose
