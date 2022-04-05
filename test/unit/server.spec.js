@@ -197,7 +197,7 @@ describe('server', () => {
       server.__set__('app', app);
 
       server.listen();
-      expect(app.listen.args).to.deep.equal([[5100]]);
+      expect(app.listen.args).to.deep.equal([[5008]]);
     });
   });
 });

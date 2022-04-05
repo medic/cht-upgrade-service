@@ -194,7 +194,7 @@ const getServiceEnv = async (file, service, envVarName) => {
 };
 
 module.exports = {
-  url: 'http://localhost:5100/',
+  url: 'http://localhost:5008/',
   getServiceVersion,
 
   runScript,
