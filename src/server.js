@@ -9,11 +9,11 @@ const app = express();
 const containers = require('./containers');
 
 const upgrade = async (req, res) => {
-  if (!req.body || !req.body['docker-compose'] || !Object.keys(req.body['docker-compose']).length) {
+  if (!req.body || !req.body.dockerCompose || !Object.keys(req.body.dockerCompose).length) {
     return res.status(400).json({ error: true, reason: 'Invalid payload.' });
   }
 
-  const payload = Object.entries(req.body['docker-compose']);
+  const payload = Object.entries(req.body.dockerCompose);
   const response = {};
 
   try {
