@@ -48,7 +48,7 @@ describe('server', () => {
 
     it('should respond with 500 when upgrade fails', async () => {
       req.body = {
-        dockerCompose: {
+        docker_compose: {
           one: 'docker 1',
           two: 'docker 2',
         },
@@ -68,7 +68,7 @@ describe('server', () => {
 
     it('should respond with 500 when startup fails', async () => {
       req.body = {
-        dockerCompose: {
+        docker_compose: {
           one: 'docker 1',
           two: 'docker 2',
         },
@@ -88,7 +88,7 @@ describe('server', () => {
 
     it('should forward the whole error if no message', async () => {
       req.body = {
-        dockerCompose: {
+        docker_compose: {
           one: 'docker 1',
         },
       };
@@ -106,7 +106,7 @@ describe('server', () => {
 
     it('should try to upgrade multiple docker-compose files', async () => {
       req.body = {
-        dockerCompose: {
+        docker_compose: {
           'docker-compose.cht.yml': 'contents 1',
           'something-something': 'contents 2',
           'rapidpro?': 'contents 3',
@@ -134,7 +134,7 @@ describe('server', () => {
 
     it('should try to upgrade single docker-compose file', async () => {
       req.body = {
-        dockerCompose: {
+        docker_compose: {
           'cht-compose.yml': 'the contents',
         },
       };
