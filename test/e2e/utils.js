@@ -128,7 +128,7 @@ const startContainers = async () => {
 };
 
 const upgradeContainers = async (payload) => {
-  const body = { dockerCompose: payload };
+  const body = { docker_compose: payload };
   return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
 };
 
