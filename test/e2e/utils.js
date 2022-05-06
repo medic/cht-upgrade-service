@@ -128,7 +128,7 @@ const startContainers = async () => {
 };
 
 const upgradeContainers = async (payload) => {
-  const body = { 'docker-compose': payload };
+  const body = { docker_compose: payload };
   return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
 };
 
@@ -164,10 +164,16 @@ const waitForServiceContainersUp = async () => {
 
 const allContainersUp = async (files) => {
   const services = (await testComposeCommand(files, 'config --services')).split('\n').filter(i => i);
-  const containers = (await testComposeCommand(files, 'ps -q')).split('\n').filter(i => i);
-  if (containers.length !== services.length) {
+  try {
+    const containers = (await testComposeCommand(files, 'ps -q')).split('\n').filter(i => i);
+    if (containers.length !== services.length) {
+      return false;
+    }
+  } catch (err) {
+    console.warn('Error when getting containers', err);
     return false;
   }
+
   // services are responding too
   for (const service of services) {
     try {

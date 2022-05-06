@@ -40,7 +40,7 @@ describe('server', () => {
     });
 
     it('should respond with 400 when no docker-compose list', () => {
-      req.body = { some: 'random', stuff: 2, 'docker-compose': { } };
+      req.body = { some: 'random', stuff: 2, dockerCompose: { } };
       server.__get__('upgrade')(req, res);
       expect(res.status.args).to.deep.equal([[400]]);
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'Invalid payload.' }]]);
@@ -48,7 +48,7 @@ describe('server', () => {
 
     it('should respond with 500 when upgrade fails', async () => {
       req.body = {
-        'docker-compose': {
+        docker_compose: {
           one: 'docker 1',
           two: 'docker 2',
         },
@@ -68,7 +68,7 @@ describe('server', () => {
 
     it('should respond with 500 when startup fails', async () => {
       req.body = {
-        'docker-compose': {
+        docker_compose: {
           one: 'docker 1',
           two: 'docker 2',
         },
@@ -88,7 +88,7 @@ describe('server', () => {
 
     it('should forward the whole error if no message', async () => {
       req.body = {
-        'docker-compose': {
+        docker_compose: {
           one: 'docker 1',
         },
       };
@@ -106,7 +106,7 @@ describe('server', () => {
 
     it('should try to upgrade multiple docker-compose files', async () => {
       req.body = {
-        'docker-compose': {
+        docker_compose: {
           'docker-compose.cht.yml': 'contents 1',
           'something-something': 'contents 2',
           'rapidpro?': 'contents 3',
@@ -134,7 +134,7 @@ describe('server', () => {
 
     it('should try to upgrade single docker-compose file', async () => {
       req.body = {
-        'docker-compose': {
+        docker_compose: {
           'cht-compose.yml': 'the contents',
         },
       };
