@@ -2,21 +2,19 @@ version: '3.9'
 
 services:
   cht-upgrade-service:
-    build: .
+    image: ${ECR_REPO:-medicmobile}/cht-upgrade-service:latest
     container_name: cht-upgrade-service
-    ports:
-      - "5008:5008"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_CONFIG_PATH}:/config
       - ${CHT_COMPOSE_PATH}:/docker-compose
-    command: node /app/src/index.js
     networks:
       - cht-net
     environment:
       - COUCHDB_USER
       - COUCHDB_PASSWORD
-      - COUCH_PORT
+      - COUCHDB_SECRET
+      - COUCHDB_UUID
       - API_PORT
       - MARKET_URL_READ
       - BUILDS_SERVER
