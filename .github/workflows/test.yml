@@ -3,7 +3,6 @@ name: Test
 on: [push, pull_request]
 
 env:
-  DOCKERHUB_USERNAME: 'dockermedic'
   ECR_REPO: '720541322708.dkr.ecr.eu-west-2.amazonaws.com/medic'
 
 jobs:
