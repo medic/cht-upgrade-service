@@ -132,6 +132,11 @@ const upgradeContainers = async (payload) => {
   return await fetchJson(`${module.exports.url}upgrade`, { method: 'POST', body });
 };
 
+const installContainers = async (payload) => {
+  const body = { docker_compose: payload };
+  return await fetchJson(`${module.exports.url}install`, { method: 'POST', body });
+};
+
 const up = async (waitForStart = true, env) => {
   setEnv(env);
   await serviceComposeCommand('up -d');
@@ -213,6 +218,7 @@ module.exports = {
   waitUntilReady,
   startContainers,
   upgradeContainers,
+  installContainers,
   up,
   getServiceEnv,
   setEnv,
