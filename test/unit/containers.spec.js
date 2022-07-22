@@ -103,6 +103,7 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(fs.promises, 'rmdir');
+      sinon.stub(fs, 'existsSync').returns(true);
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
       sinon.stub(dockerComposeCli, 'up').resolves(true);
@@ -110,7 +111,45 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      await containers.upgrade(filename, contents);
+      const result = await containers.upgrade(filename, contents);
+      expect(result).to.equal(true);
+
+      expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
+      expect(fs.promises.writeFile.callCount).to.deep.equal(2);
+      expect(fs.promises.writeFile.args[0]).to.deep.equal(['/path/to/temp/temp.yml', contents, 'utf-8']);
+      expect(dockerComposeCli.validate.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.unlink.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.rmdir.args).to.deep.equal([['/path/to/temp']]);
+
+      expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
+      expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
+    });
+
+    it('should not create new docker-compose file when installation is not requested', async () => {
+      sinon.stub(fs, 'existsSync').returns(false);
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.upgrade(filename, contents);
+      expect(result).to.equal(false);
+    });
+
+    it('should create new docker-compose file when installation is requested', async () => {
+      sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
+      sinon.stub(fs.promises, 'writeFile').resolves();
+      sinon.stub(fs.promises, 'unlink');
+      sinon.stub(fs.promises, 'rmdir');
+      sinon.stub(fs, 'existsSync').returns(false);
+      sinon.stub(dockerComposeCli, 'validate').resolves(true);
+      sinon.stub(dockerComposeCli, 'pull').resolves(true);
+      sinon.stub(dockerComposeCli, 'up').resolves(true);
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.upgrade(filename, contents, true);
+      expect(result).to.equal(true);
 
       expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
       expect(fs.promises.writeFile.callCount).to.deep.equal(2);
@@ -128,6 +167,7 @@ describe('containers lib', () => {
     });
 
     it('should throw error if contents are invalid config', async () => {
+      sinon.stub(fs, 'existsSync').returns(true);
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
@@ -141,6 +181,7 @@ describe('containers lib', () => {
     });
 
     it('should throw error if overwrite fails', async () => {
+      sinon.stub(fs, 'existsSync').returns(true);
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       fs.promises.writeFile.onCall(1).rejects({ the: 'error' });
@@ -158,6 +199,7 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
+      sinon.stub(fs, 'existsSync').returns(true);
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').rejects(new Error('an error'));
 

@@ -59,8 +59,8 @@ describe('server', () => {
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(2);
-      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1']);
-      expect(containers.upgrade.args[1]).to.deep.equal(['two', 'docker 2']);
+      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1', false]);
+      expect(containers.upgrade.args[1]).to.deep.equal(['two', 'docker 2', false]);
 
       expect(res.status.args).to.deep.equal([[500]]);
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'booom' }]]);
@@ -79,8 +79,8 @@ describe('server', () => {
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(2);
-      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1']);
-      expect(containers.upgrade.args[1]).to.deep.equal(['two', 'docker 2']);
+      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1', false]);
+      expect(containers.upgrade.args[1]).to.deep.equal(['two', 'docker 2', false]);
 
       expect(res.status.args).to.deep.equal([[500]]);
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'booom' }]]);
@@ -98,7 +98,7 @@ describe('server', () => {
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(1);
-      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1']);
+      expect(containers.upgrade.args[0]).to.deep.equal(['one', 'docker 1', false]);
 
       expect(res.status.args).to.deep.equal([[500]]);
       expect(res.json.args).to.deep.equal([[{ error: true, reason: 'omg this is a string' }]]);
@@ -112,15 +112,15 @@ describe('server', () => {
           'rapidpro?': 'contents 3',
         },
       };
-      sinon.stub(containers, 'upgrade').resolves();
+      sinon.stub(containers, 'upgrade').resolves(true);
       sinon.stub(containers, 'startUp').resolves();
 
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(3);
-      expect(containers.upgrade.args[0]).to.deep.equal(['docker-compose.cht.yml', 'contents 1']);
-      expect(containers.upgrade.args[1]).to.deep.equal(['something-something', 'contents 2']);
-      expect(containers.upgrade.args[2]).to.deep.equal(['rapidpro?', 'contents 3']);
+      expect(containers.upgrade.args[0]).to.deep.equal(['docker-compose.cht.yml', 'contents 1', false]);
+      expect(containers.upgrade.args[1]).to.deep.equal(['something-something', 'contents 2', false]);
+      expect(containers.upgrade.args[2]).to.deep.equal(['rapidpro?', 'contents 3', false]);
       expect(containers.startUp.callCount).to.equal(1);
 
       expect(res.status.callCount).to.equal(0);
@@ -132,25 +132,76 @@ describe('server', () => {
       }]);
     });
 
+    it('should try to upgrade multiple docker-compose files when some do not exist', async () => {
+      req.body = {
+        docker_compose: {
+          'docker-compose.cht.yml': 'contents 1',
+          'something-something': 'contents 2',
+          'rapidpro?': 'contents 3',
+        },
+      };
+      sinon.stub(containers, 'upgrade').resolves(true);
+      containers.upgrade.onCall(1).resolves(false);
+      sinon.stub(containers, 'startUp').resolves();
+
+      await server.__get__('upgrade')(req, res);
+
+      expect(containers.upgrade.callCount).to.equal(3);
+      expect(containers.upgrade.args[0]).to.deep.equal(['docker-compose.cht.yml', 'contents 1', false]);
+      expect(containers.upgrade.args[1]).to.deep.equal(['something-something', 'contents 2', false]);
+      expect(containers.upgrade.args[2]).to.deep.equal(['rapidpro?', 'contents 3', false]);
+      expect(containers.startUp.callCount).to.equal(1);
+
+      expect(res.status.callCount).to.equal(0);
+      expect(res.json.callCount).to.equal(1);
+      expect(res.json.args[0]).to.deep.equal([{
+        'docker-compose.cht.yml': { ok: true },
+        'something-something': { ok: false },
+        'rapidpro?': { ok: true },
+      }]);
+    });
+
     it('should try to upgrade single docker-compose file', async () => {
       req.body = {
         docker_compose: {
           'cht-compose.yml': 'the contents',
         },
       };
-      sinon.stub(containers, 'upgrade').resolves();
+      sinon.stub(containers, 'upgrade').resolves(true);
       sinon.stub(containers, 'startUp').resolves();
 
       await server.__get__('upgrade')(req, res);
 
       expect(containers.upgrade.callCount).to.equal(1);
-      expect(containers.upgrade.args[0]).to.deep.equal(['cht-compose.yml', 'the contents']);
+      expect(containers.upgrade.args[0]).to.deep.equal(['cht-compose.yml', 'the contents', false]);
       expect(containers.startUp.callCount).to.equal(1);
 
       expect(res.status.callCount).to.equal(0);
       expect(res.json.callCount).to.equal(1);
       expect(res.json.args[0]).to.deep.equal([{
         'cht-compose.yml': { ok: true },
+      }]);
+    });
+
+    it('should respond with false with file was not upgraded', async () => {
+      req.body = {
+        docker_compose: {
+          'cht-compose.yml': 'the contents',
+        },
+      };
+      sinon.stub(containers, 'upgrade').resolves(false);
+      sinon.stub(containers, 'startUp').resolves();
+
+      await server.__get__('upgrade')(req, res);
+
+      expect(containers.upgrade.callCount).to.equal(1);
+      expect(containers.upgrade.args[0]).to.deep.equal(['cht-compose.yml', 'the contents', false]);
+      expect(containers.startUp.callCount).to.equal(1);
+
+      expect(res.status.callCount).to.equal(0);
+      expect(res.json.callCount).to.equal(1);
+      expect(res.json.args[0]).to.deep.equal([{
+        'cht-compose.yml': { ok: false },
       }]);
     });
   });
