@@ -97,7 +97,7 @@ describe('containers lib', () => {
     });
   });
 
-  describe('upgrade', () => {
+  describe('update', () => {
     it('should validate, overwrite compose file and do a pull', async () => {
       sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
       sinon.stub(fs.promises, 'writeFile').resolves();
@@ -111,7 +111,7 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      const result = await containers.upgrade(filename, contents);
+      const result = await containers.update(filename, contents);
       expect(result).to.equal(true);
 
       expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
@@ -131,7 +131,7 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      const result = await containers.upgrade(filename, contents);
+      const result = await containers.update(filename, contents);
       expect(result).to.equal(false);
     });
 
@@ -148,7 +148,7 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      const result = await containers.upgrade(filename, contents, true);
+      const result = await containers.update(filename, contents, true);
       expect(result).to.equal(true);
 
       expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
@@ -163,7 +163,7 @@ describe('containers lib', () => {
     });
 
     it('should throw error if filename is empty', async () => {
-      await expect(containers.upgrade()).to.be.rejectedWith('Invalid docker-compose file name');
+      await expect(containers.update()).to.be.rejectedWith('Invalid docker-compose file name');
     });
 
     it('should throw error if contents are invalid config', async () => {
@@ -176,7 +176,7 @@ describe('containers lib', () => {
       const filename = 'docker.file';
       const contents = 'config';
 
-      await expect(containers.upgrade(filename, contents))
+      await expect(containers.update(filename, contents))
         .to.be.rejectedWith(`Invalid docker-compose yml for file ${filename}`);
     });
 
@@ -191,7 +191,7 @@ describe('containers lib', () => {
       const filename = 'docker.file';
       const contents = 'config';
 
-      await expect(containers.upgrade(filename, contents))
+      await expect(containers.update(filename, contents))
         .to.be.rejectedWith('Invalid docker-compose yml for file docker.file');
     });
 
@@ -206,7 +206,7 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      await expect(containers.upgrade(filename, contents)).to.be.rejectedWith('an error');
+      await expect(containers.update(filename, contents)).to.be.rejectedWith('an error');
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);

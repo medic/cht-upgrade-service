@@ -19,13 +19,13 @@ const overwriteComposeFile = async (filePath, fileContents) => {
   await fs.promises.writeFile(filePath, fileContents, 'utf-8');
 };
 
-const upgrade = async (fileName, fileContents, install = false) => {
+const update = async (fileName, fileContents, install = false) => {
   if (!fileName) {
     throw new Error('Invalid docker-compose file name');
   }
 
   const filePath = path.join(dockerComposeFilePath, fileName);
-  if (!install && !fs.existsSync(filePath)) {
+  if (install !== !fs.existsSync(filePath)) {
     return false;
   }
 
@@ -57,6 +57,6 @@ const startUp = async () => {
 };
 
 module.exports = {
-  upgrade,
+  update,
   startUp,
 };

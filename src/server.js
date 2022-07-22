@@ -8,26 +8,17 @@ process.env.UPGRADE_SERVICE_URL = `http://cht-upgrade-service:${PORT}`;
 const app = express();
 const containers = require('./containers');
 
-const getPayload = (req) => {
+const update = async (req, res, install = false) => {
   if (!req.body || !req.body.docker_compose || !Object.keys(req.body.docker_compose).length) {
-    return false;
-  }
-
-  return Object.entries(req.body.docker_compose);
-};
-
-const upgrade = async (req, res, install = false) => {
-  const payload = getPayload(req);
-
-  if (!payload) {
     return res.status(400).json({ error: true, reason: 'Invalid payload.' });
   }
 
+  const payload = Object.entries(req.body.docker_compose);
   const response = {};
 
   try {
     for (const [fileName, fileContents] of payload) {
-      const upgraded = await containers.upgrade(fileName, fileContents, install);
+      const upgraded = await containers.update(fileName, fileContents, install);
       response[fileName] = { ok: upgraded };
     }
     await containers.startUp();
@@ -53,8 +44,8 @@ const status = (req, res) => {
 };
 
 app.get('/', status);
-app.post('/upgrade', jsonParser, (req, res) => upgrade(req, res));
-app.post('/install', jsonParser, (req, res) => upgrade(req, res, true));
+app.post('/upgrade', jsonParser, (req, res) => update(req, res, false));
+app.post('/install', jsonParser, (req, res) => update(req, res, true));
 app.post('/start', start);
 
 const listen = () => {
