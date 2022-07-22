@@ -11,7 +11,9 @@ const {
 } = process.env;
 
 const getBranchVersions = () => {
-  return BRANCH === 'main' ? [`${packageJson.version}`, 'latest'] : `${packageJson.version}-${BRANCH}-${BUILD_NUMBER}`;
+  return BRANCH === 'main' ?
+    [`${packageJson.version}`, 'latest'] :
+    [`${packageJson.version}-${BRANCH}-${BUILD_NUMBER}`];
 };
 
 const getRepo = () => {
