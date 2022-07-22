@@ -57,10 +57,58 @@ Expected response:
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
+- skips files that don't already exist
 - validates the contents of each file
-- creates the files with the passed name in the `CHT_COMPOSE_PATH` folder (if the file already exists, it will be overwritten) 
+- overwrites the files with the passed name in the `CHT_COMPOSE_PATH` folder 
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
 - after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images. 
+
+Request body:
+```Accepts: application/json```
+```json
+{
+  "docker_compose": {
+    "<file_name1>": "<file contents>",
+    "<file_name2>": "<file contents>"
+  }
+}
+```
+
+Expected successful response:
+```HTTP/1.1 200```
+```json
+{
+  "<file_name1>": { "ok": true },
+  "<file_name2>": { "ok": true }
+}
+```
+
+Expected successful response when one of the files doesn't exist:
+```HTTP/1.1 200```
+```json
+{
+  "<existent_file>": { "ok": true },
+  "<non_existent_file>": { "ok": false }
+}
+```
+
+Expected error response:
+```HTTP/1.1 500```
+```json
+{
+  "error": true,
+  "reason": "<error details>"
+}
+```
+
+### POST /install
+
+Accepts a payload that contains pairs of docker-compose file names and contents. It
+
+- validates the contents of each file
+- saves the files with the passed name in the `CHT_COMPOSE_PATH` folder (overwrites if the file already exists)
+- pulls docker images from every updated file (`docker-compose pull -f <file>`)
+- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images.
 
 Request body:
 ```Accepts: application/json```
