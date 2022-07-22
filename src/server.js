@@ -14,7 +14,7 @@ const getPayload = (req) => {
   }
 
   return Object.entries(req.body.docker_compose);
-}
+};
 
 const upgrade = async (req, res, install = false) => {
   const payload = getPayload(req);
