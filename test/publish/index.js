@@ -66,7 +66,15 @@ const dockerCommand = (params) => {
   try {
     const tags = getImageTags();
     const dockerfilePath = path.join(__dirname, '..', '..', 'Dockerfile');
-    await dockerCommand([`build -f ${dockerfilePath}`, ...tags.map(tag => `--tag ${tag}`), '.']);
+    const dockerBuildParams = [
+      'build',
+      '-f',
+      dockerfilePath,
+      ...tags.map(tag => `--tag ${tag}`),
+      '.'
+    ];
+
+    await dockerCommand(dockerBuildParams);
     for (const tag of tags) {
       await dockerCommand(['push', tag]);
     }
