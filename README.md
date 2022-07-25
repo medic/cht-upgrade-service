@@ -22,17 +22,17 @@ Todo steps??
 
 #### Export the environment variables:
 
-| Name                 | Required | Description                                                                                                        |
-|----------------------|----------|--------------------------------------------------------------------------------------------------------------------|
-| `DOCKER_CONFIG_PATH` | no       | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images | 
-| `CHT_COMPOSE_PATH`   | yes      | Absolute path to the folder where the CHT docker-compose file is saved                                             | 
-| `COUCHDB_USER`       | yes      | CouchDb main admin account username                                                                                |
-| `COUCHDB_PASSWORD`   | yes      | CouchDb main admin account password                                                                                | 
-| `COUCHDB_SECRET`     | no       | CouchDb secret                                                                                                     |  
-| `COUCHDB_UUID`       | no | The uuid of the CouchDb Server                                                                                     |
-| `API_PORT`           | no | Defaults to 5988. The port on which CHT-Api is available on the network.                                           | 
-| `MARKET_URL_READ`    | no | Defaults to `https://staging.dev.medicmobile.org`. Points to the source of the CHT-Core staging server.            |                                                                |                                                                 |
-| `BUILDS_SERVER`      | no | Defaults to `_couch/builds`. Points to the source of the CHT-Core staging server database.                         | 
+| Name                 | Required | Description                                                                                                                                                                                                                                  |
+|----------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CHT_COMPOSE_PATH`   | yes      | Absolute path to the folder where the CHT docker-compose file is saved.                                                                                                                                                                      | 
+| `COUCHDB_USER`       | yes      | CouchDb main admin account username.                                                                                                                                                                                                         |
+| `COUCHDB_PASSWORD`   | yes      | CouchDb main admin account password.                                                                                                                                                                                                         | 
+| `COUCHDB_SECRET`     | yes      | Secret that is used by the CouchDB peers to communicate with each other and to generate authentication cookies. This field is mandatory if you are running CouchDb clustered mode to make the same authentication cookie valid on all nodes. |  
+| `DOCKER_CONFIG_PATH` | no       | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries.                                               |
+| `COUCHDB_UUID`       | no       | The uuid of the CouchDb Server                                                                                                                                                                                                               |
+| `API_PORT`           | no       | Defaults to 5988. The port on which CHT-Api is available on the network.                                                                                                                                                                     | 
+| `MARKET_URL_READ`    | no       | Defaults to `https://staging.dev.medicmobile.org`. Points to the source of the CHT-Core staging server.                                                                                                                                      |                                                                |                                                                 |
+| `BUILDS_SERVER`      | no       | Defaults to `_couch/builds`. Points to the source of the CHT-Core staging server database.                                                                                                                                                   | 
 
 #### Run
 ```shell
@@ -52,16 +52,15 @@ Expected response:
 ```
 
 
-
 ### POST /upgrade
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
 - skips files that don't already exist
 - validates the contents of each file
-- overwrites the files with the passed name in the `CHT_COMPOSE_PATH` folder 
+- overwrites the files with the passed name in the `CHT_COMPOSE_PATH` folder
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
-- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images. 
+- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images.
 
 Request body:
 ```Accepts: application/json```

@@ -33,9 +33,7 @@ const getImageTags = () => {
   return tags.map(tag => `${getRepo()}/cht-upgrade-service:${tag}`);
 };
 
-const dockerCommand = (params) => {
-  const args = [ ...params.filter(param => param).map(param => param.split(' ')) ].flat();
-
+const dockerCommand = (args) => {
   console.log('docker', ...args);
 
   return new Promise((resolve, reject) => {
@@ -66,7 +64,15 @@ const dockerCommand = (params) => {
   try {
     const tags = getImageTags();
     const dockerfilePath = path.join(__dirname, '..', '..', 'Dockerfile');
-    await dockerCommand([`build -f ${dockerfilePath}`, ...tags.map(tag => `--tag ${tag}`), '.']);
+    const dockerBuildParams = [
+      'build',
+      '-f',
+      dockerfilePath,
+      ...tags.map(tag => `--tag ${tag}`),
+      '.'
+    ];
+
+    await dockerCommand(dockerBuildParams);
     for (const tag of tags) {
       await dockerCommand(['push', tag]);
     }
