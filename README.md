@@ -104,7 +104,7 @@ Expected error response:
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
-- creates the files with the corresponding name in the `CHT_COMPOSE_PATH` folder (overwrites if the file already exists)
+- creates the files with the corresponding name in the `CHT_COMPOSE_PATH` folder
 - validates the contents of each file before creation
 - does not overwrite existing files, if a matching file already exists in `CHT_COMPOSE_PATH` folder, writing is skipped
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
