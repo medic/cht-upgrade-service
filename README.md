@@ -56,11 +56,11 @@ Expected response:
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
-- skips files that don't already exist
-- validates the contents of each file
-- overwrites the files with the passed name in the `CHT_COMPOSE_PATH` folder
+- overwrites the files with the corresponding name in the `CHT_COMPOSE_PATH` folder
+- validates the contents of each file before overwriting
+- does not create new files, if a matching file does not already exist in `CHT_COMPOSE_PATH` folder, writing is skipped
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
-- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images.
+- when all files have been processed, executes a `docker-compose up` over all files in the folder, restarting the containers that have new images.
 
 Request body:
 ```Accepts: application/json```
@@ -82,7 +82,7 @@ Expected successful response:
 }
 ```
 
-Expected successful response when one of the files doesn't exist:
+Expected successful response when a file is skipped:
 ```HTTP/1.1 200```
 ```json
 {
@@ -104,10 +104,11 @@ Expected error response:
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
-- validates the contents of each file
-- saves the files with the passed name in the `CHT_COMPOSE_PATH` folder (overwrites if the file already exists)
+- creates the files with the corresponding name in the `CHT_COMPOSE_PATH` folder (overwrites if the file already exists)
+- validates the contents of each file before creation
+- does not overwrite existing files, if a matching file already exists in `CHT_COMPOSE_PATH` folder, writing is skipped
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
-- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images.
+- when all files have been processed, does a `docker-compose up` over all files in the folder, which start the new containers. 
 
 Request body:
 ```Accepts: application/json```
@@ -126,6 +127,15 @@ Expected successful response:
 {
   "<file_name1>": { "ok": true },
   "<file_name2>": { "ok": true }
+}
+```
+
+Expected successful response when a file is skipped:
+```HTTP/1.1 200```
+```json
+{
+  "<existent_file>": { "ok": false },
+  "<non_existent_file>": { "ok": true }
 }
 ```
 
