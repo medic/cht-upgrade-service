@@ -18,8 +18,8 @@ const update = async (req, res, install = false) => {
 
   try {
     for (const [fileName, fileContents] of payload) {
-      const upgraded = await containers.update(fileName, fileContents, install);
-      response[fileName] = { ok: upgraded };
+      const updated = await containers.update(fileName, fileContents, install);
+      response[fileName] = { ok: updated };
     }
     await containers.startUp();
     res.json(response);

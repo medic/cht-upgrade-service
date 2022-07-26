@@ -98,7 +98,7 @@ describe('containers lib', () => {
   });
 
   describe('update', () => {
-    it('should validate, overwrite compose file and do a pull', async () => {
+    it('should validate, overwrite compose file and do a pull when installation is not requested', async () => {
       sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
@@ -160,6 +160,16 @@ describe('containers lib', () => {
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
+    });
+
+    it('should not overwrite existent docker-compose files when installation is requested', async () => {
+      sinon.stub(fs, 'existsSync').returns(true);
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.update(filename, contents, true);
+      expect(result).to.equal(false);
     });
 
     it('should throw error if filename is empty', async () => {

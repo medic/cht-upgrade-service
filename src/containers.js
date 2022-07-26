@@ -25,7 +25,7 @@ const update = async (fileName, fileContents, install = false) => {
   }
 
   const filePath = path.join(dockerComposeFilePath, fileName);
-  if (install !== !fs.existsSync(filePath)) {
+  if (install === fs.existsSync(filePath)) {
     return false;
   }
 

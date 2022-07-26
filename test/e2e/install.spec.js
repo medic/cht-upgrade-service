@@ -56,6 +56,24 @@ describe('install', () => {
     expect(await utils.getServiceVersion('three.yml', 'three')).to.equal('2.0.0');
   });
 
+  it('should not overwrite existent files', async () => {
+    await utils.setVersion('one-two.yml', '1.0.0');
+    await utils.up();
+
+    const response = await utils.installContainers({
+      'one-two.yml': await await utils.setVersion('one-two.yml', '2.0.0', false),
+      'three.yml': await await utils.setVersion('three.yml', '3.0.0', false),
+    });
+    expect(response).to.deep.equal({
+      'one-two.yml': { ok: false },
+      'three.yml': { ok: true },
+    });
+
+    expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
+    expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
+    expect(await utils.getServiceVersion('three.yml', 'three')).to.equal('3.0.0');
+  });
+
   it('should return error when docker compose file is invalid', async () => {
     await utils.up();
     const response = await expect(utils.installContainers({
