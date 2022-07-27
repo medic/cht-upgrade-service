@@ -65,7 +65,7 @@ describe('install', () => {
       'three.yml': await await utils.setVersion('three.yml', '3.0.0', false),
     });
     expect(response).to.deep.equal({
-      'one-two.yml': { ok: false },
+      'one-two.yml': { ok: false, reason: `Existing installation found. Use '/upgrade' API to upgrade.` },
       'three.yml': { ok: true },
     });
 

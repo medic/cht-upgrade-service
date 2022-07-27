@@ -103,7 +103,7 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(fs.promises, 'rmdir');
-      sinon.stub(fs, 'existsSync').returns(true);
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
       sinon.stub(dockerComposeCli, 'up').resolves(true);
@@ -126,7 +126,7 @@ describe('containers lib', () => {
     });
 
     it('should not create new docker-compose file when installation is not requested', async () => {
-      sinon.stub(fs, 'existsSync').returns(false);
+      sinon.stub(fs.promises, 'stat').rejects();
 
       const filename = 'docker-compose.file';
       const contents = 'the contents';
@@ -140,7 +140,7 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(fs.promises, 'rmdir');
-      sinon.stub(fs, 'existsSync').returns(false);
+      sinon.stub(fs.promises, 'stat').rejects();
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
       sinon.stub(dockerComposeCli, 'up').resolves(true);
@@ -163,7 +163,7 @@ describe('containers lib', () => {
     });
 
     it('should not overwrite existent docker-compose files when installation is requested', async () => {
-      sinon.stub(fs, 'existsSync').returns(true);
+      sinon.stub(fs.promises, 'stat').resolves();
 
       const filename = 'docker-compose.file';
       const contents = 'the contents';
@@ -177,7 +177,7 @@ describe('containers lib', () => {
     });
 
     it('should throw error if contents are invalid config', async () => {
-      sinon.stub(fs, 'existsSync').returns(true);
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
@@ -191,7 +191,7 @@ describe('containers lib', () => {
     });
 
     it('should throw error if overwrite fails', async () => {
-      sinon.stub(fs, 'existsSync').returns(true);
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       fs.promises.writeFile.onCall(1).rejects({ the: 'error' });
@@ -209,7 +209,7 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
-      sinon.stub(fs, 'existsSync').returns(true);
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').rejects(new Error('an error'));
 

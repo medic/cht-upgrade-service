@@ -95,7 +95,7 @@ describe('upgrade', () => {
 
     expect(response).to.deep.equal({
       'one-two.yml': { ok: true },
-      'three.yml': { ok: false },
+      'three.yml': { ok: false, reason: `Existing installation not found. Use '/install' API to install.` },
     });
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('2.0.0');

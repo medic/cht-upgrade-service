@@ -87,7 +87,7 @@ Expected successful response when a file is skipped:
 ```json
 {
   "<existent_file>": { "ok": true },
-  "<non_existent_file>": { "ok": false }
+  "<non_existent_file>": { "ok": false, "reason": "Existing installation not found. Use '/install' API to install." }
 }
 ```
 
@@ -134,7 +134,7 @@ Expected successful response when a file is skipped:
 ```HTTP/1.1 200```
 ```json
 {
-  "<existent_file>": { "ok": false },
+  "<existent_file>": { "ok": false, "reason": "Existing installation found. Use '/upgrade' API to upgrade." },
   "<non_existent_file>": { "ok": true }
 }
 ```

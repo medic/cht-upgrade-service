@@ -156,7 +156,7 @@ describe('server', () => {
       expect(res.json.callCount).to.equal(1);
       expect(res.json.args[0]).to.deep.equal([{
         'docker-compose.cht.yml': { ok: true },
-        'something-something': { ok: false },
+        'something-something': { ok: false, reason: `Existing installation not found. Use '/install' API to install.` },
         'rapidpro?': { ok: true },
       }]);
     });
@@ -201,7 +201,7 @@ describe('server', () => {
       expect(res.status.callCount).to.equal(0);
       expect(res.json.callCount).to.equal(1);
       expect(res.json.args[0]).to.deep.equal([{
-        'cht-compose.yml': { ok: false },
+        'cht-compose.yml': { ok: false, reason: `Existing installation not found. Use '/install' API to install.` },
       }]);
     });
 
@@ -224,6 +224,28 @@ describe('server', () => {
       expect(res.json.callCount).to.equal(1);
       expect(res.json.args[0]).to.deep.equal([{
         'cht-compose.yml': { ok: true },
+      }]);
+    });
+
+    it('should respond with false with file was not installed', async () => {
+      req.body = {
+        docker_compose: {
+          'cht-compose.yml': 'the contents',
+        },
+      };
+      sinon.stub(containers, 'update').resolves(false);
+      sinon.stub(containers, 'startUp').resolves();
+
+      await server.__get__('update')(req, res, true);
+
+      expect(containers.update.callCount).to.equal(1);
+      expect(containers.update.args[0]).to.deep.equal(['cht-compose.yml', 'the contents', true]);
+      expect(containers.startUp.callCount).to.equal(1);
+
+      expect(res.status.callCount).to.equal(0);
+      expect(res.json.callCount).to.equal(1);
+      expect(res.json.args[0]).to.deep.equal([{
+        'cht-compose.yml': { ok: false, reason: `Existing installation found. Use '/upgrade' API to upgrade.` },
       }]);
     });
   });
