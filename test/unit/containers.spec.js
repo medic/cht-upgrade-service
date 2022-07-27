@@ -97,12 +97,13 @@ describe('containers lib', () => {
     });
   });
 
-  describe('upgrade', () => {
-    it('should validate, overwrite compose file and do a pull', async () => {
+  describe('update', () => {
+    it('should validate, overwrite compose file and do a pull when installation is not requested', async () => {
       sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
       sinon.stub(fs.promises, 'rmdir');
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').resolves(true);
       sinon.stub(dockerComposeCli, 'up').resolves(true);
@@ -110,7 +111,8 @@ describe('containers lib', () => {
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      await containers.upgrade(filename, contents);
+      const result = await containers.update(filename, contents);
+      expect(result).to.equal(true);
 
       expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
       expect(fs.promises.writeFile.callCount).to.deep.equal(2);
@@ -123,11 +125,59 @@ describe('containers lib', () => {
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
     });
 
+    it('should not create new docker-compose file when installation is not requested', async () => {
+      sinon.stub(fs.promises, 'stat').rejects();
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.update(filename, contents);
+      expect(result).to.equal(false);
+    });
+
+    it('should create new docker-compose file when installation is requested', async () => {
+      sinon.stub(fs.promises, 'mkdtemp').resolves('/path/to/temp');
+      sinon.stub(fs.promises, 'writeFile').resolves();
+      sinon.stub(fs.promises, 'unlink');
+      sinon.stub(fs.promises, 'rmdir');
+      sinon.stub(fs.promises, 'stat').rejects();
+      sinon.stub(dockerComposeCli, 'validate').resolves(true);
+      sinon.stub(dockerComposeCli, 'pull').resolves(true);
+      sinon.stub(dockerComposeCli, 'up').resolves(true);
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.update(filename, contents, true);
+      expect(result).to.equal(true);
+
+      expect(fs.promises.mkdtemp.args).to.deep.equal([['docker-compose']]);
+      expect(fs.promises.writeFile.callCount).to.deep.equal(2);
+      expect(fs.promises.writeFile.args[0]).to.deep.equal(['/path/to/temp/temp.yml', contents, 'utf-8']);
+      expect(dockerComposeCli.validate.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.unlink.args).to.deep.equal([['/path/to/temp/temp.yml']]);
+      expect(fs.promises.rmdir.args).to.deep.equal([['/path/to/temp']]);
+
+      expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
+      expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);
+    });
+
+    it('should not overwrite existent docker-compose files when installation is requested', async () => {
+      sinon.stub(fs.promises, 'stat').resolves();
+
+      const filename = 'docker-compose.file';
+      const contents = 'the contents';
+
+      const result = await containers.update(filename, contents, true);
+      expect(result).to.equal(false);
+    });
+
     it('should throw error if filename is empty', async () => {
-      await expect(containers.upgrade()).to.be.rejectedWith('Invalid docker-compose file name');
+      await expect(containers.update()).to.be.rejectedWith('Invalid docker-compose file name');
     });
 
     it('should throw error if contents are invalid config', async () => {
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
@@ -136,11 +186,12 @@ describe('containers lib', () => {
       const filename = 'docker.file';
       const contents = 'config';
 
-      await expect(containers.upgrade(filename, contents))
+      await expect(containers.update(filename, contents))
         .to.be.rejectedWith(`Invalid docker-compose yml for file ${filename}`);
     });
 
     it('should throw error if overwrite fails', async () => {
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       fs.promises.writeFile.onCall(1).rejects({ the: 'error' });
@@ -150,7 +201,7 @@ describe('containers lib', () => {
       const filename = 'docker.file';
       const contents = 'config';
 
-      await expect(containers.upgrade(filename, contents))
+      await expect(containers.update(filename, contents))
         .to.be.rejectedWith('Invalid docker-compose yml for file docker.file');
     });
 
@@ -158,13 +209,14 @@ describe('containers lib', () => {
       sinon.stub(fs.promises, 'mkdir').resolves();
       sinon.stub(fs.promises, 'writeFile').resolves();
       sinon.stub(fs.promises, 'unlink');
+      sinon.stub(fs.promises, 'stat').resolves();
       sinon.stub(dockerComposeCli, 'validate').resolves(true);
       sinon.stub(dockerComposeCli, 'pull').rejects(new Error('an error'));
 
       const filename = 'docker-compose.file';
       const contents = 'the contents';
 
-      await expect(containers.upgrade(filename, contents)).to.be.rejectedWith('an error');
+      await expect(containers.update(filename, contents)).to.be.rejectedWith('an error');
 
       expect(fs.promises.writeFile.args[1]).to.deep.equal([`/docker-compose/${filename}`, contents, 'utf-8']);
       expect(dockerComposeCli.pull.args).to.deep.equal([[`/docker-compose/${filename}`]]);

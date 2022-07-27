@@ -52,15 +52,15 @@ Expected response:
 ```
 
 
-
 ### POST /upgrade
 
 Accepts a payload that contains pairs of docker-compose file names and contents. It
 
-- validates the contents of each file
-- creates the files with the passed name in the `CHT_COMPOSE_PATH` folder (if the file already exists, it will be overwritten) 
+- overwrites the files with the corresponding name in the `CHT_COMPOSE_PATH` folder
+- validates the contents of each file before overwriting
+- does not create new files, if a matching file does not already exist in `CHT_COMPOSE_PATH` folder, writing is skipped
 - pulls docker images from every updated file (`docker-compose pull -f <file>`)
-- after all files have been processed, does a `docker-compose up` over all files in the folder, which restarts the containers that have new images. 
+- when all files have been processed, executes a `docker-compose up` over all files in the folder, restarting the containers that have new images.
 
 Request body:
 ```Accepts: application/json```
@@ -79,6 +79,63 @@ Expected successful response:
 {
   "<file_name1>": { "ok": true },
   "<file_name2>": { "ok": true }
+}
+```
+
+Expected successful response when a file is skipped:
+```HTTP/1.1 200```
+```json
+{
+  "<existent_file>": { "ok": true },
+  "<non_existent_file>": { "ok": false, "reason": "Existing installation not found. Use '/install' API to install." }
+}
+```
+
+Expected error response:
+```HTTP/1.1 500```
+```json
+{
+  "error": true,
+  "reason": "<error details>"
+}
+```
+
+### POST /install
+
+Accepts a payload that contains pairs of docker-compose file names and contents. It
+
+- creates the files with the corresponding name in the `CHT_COMPOSE_PATH` folder
+- validates the contents of each file before creation
+- does not overwrite existing files, if a matching file already exists in `CHT_COMPOSE_PATH` folder, writing is skipped
+- pulls docker images from every updated file (`docker-compose pull -f <file>`)
+- when all files have been processed, does a `docker-compose up` over all files in the folder, which start the new containers. 
+
+Request body:
+```Accepts: application/json```
+```json
+{
+  "docker_compose": {
+    "<file_name1>": "<file contents>",
+    "<file_name2>": "<file contents>"
+  }
+}
+```
+
+Expected successful response:
+```HTTP/1.1 200```
+```json
+{
+  "<file_name1>": { "ok": true },
+  "<file_name2>": { "ok": true }
+}
+```
+
+Expected successful response when a file is skipped:
+```HTTP/1.1 200```
+```json
+{
+  "<existent_file>": { "ok": false, "reason": "Existing installation found. Use '/upgrade' API to upgrade." },
+  "<non_existent_file>": { "ok": true }
 }
 ```
 
