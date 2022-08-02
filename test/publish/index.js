@@ -68,7 +68,7 @@ const dockerCommand = (args) => {
       'build',
       '-f',
       dockerfilePath,
-      ...tags.map(tag => `--tag ${tag}`),
+      ...tags.map(tag => `-t ${tag}`),
       '.'
     ];
 
