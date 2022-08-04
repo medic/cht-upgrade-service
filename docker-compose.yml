@@ -15,6 +15,7 @@ services:
       - COUCHDB_PASSWORD
       - COUCHDB_SECRET
       - COUCHDB_UUID
+      - COUCHDB_DATA
       - API_PORT
       - MARKET_URL_READ
       - BUILDS_SERVER
