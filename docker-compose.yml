@@ -19,6 +19,16 @@ services:
       - API_PORT
       - MARKET_URL_READ
       - BUILDS_SERVER
+      - CERTIFICATE_MODE
+      - SSL_CERT_FILE_PATH
+      - SSL_KEY_FILE_PATH
+      - COMMON_NAME
+      - EMAIL
+      - COUNTRY
+      - STATE
+      - LOCALITY
+      - ORGANISATION
+      - DEPARTMENT
       - DOCKER_CONFIG=/config
 
 networks:
