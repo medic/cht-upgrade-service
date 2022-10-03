@@ -33,4 +33,4 @@ services:
 
 networks:
   cht-net:
-    name: cht-net
+    name: ${CHT_NETWORK:-cht-net}

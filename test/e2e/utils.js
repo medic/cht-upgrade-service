@@ -97,6 +97,19 @@ const fetchJson = async (url, opts = {}) => {
   throw await response.json();
 };
 
+const upgrade = async (fileNames, service, body) => {
+  const payload = JSON.stringify({ docker_compose: body });
+  try {
+    return await testComposeCommand(
+      fileNames,
+      'exec -T', service,
+      'npm run upgrade --', Buffer.from(payload).toString('base64')
+    );
+  } catch (err) {
+    return err;
+  }
+};
+
 const setVersion = async (file, version, write = true) => {
   const contents = await fs.promises.readFile(path.resolve(servicesFolder, file), 'utf-8');
   const contentsWithVersion = contents.replace(/<version>/g, version);
@@ -223,5 +236,5 @@ module.exports = {
   getServiceEnv,
   setEnv,
   upgrade,
-  takeDownNetwork,
+  waitForServiceContainersUp,
 };

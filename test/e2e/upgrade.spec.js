@@ -23,7 +23,7 @@ describe('upgrade', () => {
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('3.0.0');
   });
 
-  /*it('should upgrade one docker-compose file over internal network', async () => {
+  it('should upgrade one docker-compose file over internal network', async () => {
     await utils.setVersion('one-two.yml', '1.0.0');
     await utils.up();
 
@@ -31,9 +31,12 @@ describe('upgrade', () => {
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
 
     const upgradedToTwo = await utils.setVersion('one-two.yml', '2.0.0', false);
-    let response = await utils.upgrade( 'one-two.yml', 'one', { 'one-two.yml': upgradedToTwo });
-    expect(response).to.deep.equal({ 'one-two.yml': { ok: true } });
-  });*/
+    await utils.upgrade( 'one-two.yml', 'one', { 'one-two.yml': upgradedToTwo });
+    await utils.waitForServiceContainersUp();
+
+    expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('2.0.0');
+    expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('2.0.0');
+  });
 
   it('should upgrade multiple docker-compose files', async () => {
     await utils.setVersion('one-two.yml', '1.0.0');
