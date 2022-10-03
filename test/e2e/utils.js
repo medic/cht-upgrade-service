@@ -81,7 +81,7 @@ const testComposeCommand = (fileNames, ...args) => {
     return;
   }
 
-  return composeCommand(filePaths, ...args);
+  return composeCommand(filePaths, ...['-p', 'test', ...args]);
 };
 
 const fetchJson = async (url, opts = {}) => {
