@@ -30,6 +30,5 @@ module.exports = {
       await utils.serviceComposeCommand('down --remove-orphans -t 1');
       await utils.testComposeCommand(['one-two.yml', 'three.yml'], 'down --remove-orphans -t 1');
     },
-
   }
 };

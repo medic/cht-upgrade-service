@@ -3,6 +3,12 @@ version: '3'
 services:
   three:
     image: localhost:5000/upgrade/three:<version>
+    networks:
+      test-network-three:
     environment:
       - FOO
       - BAR
+
+networks:
+  test-network-three:
+    name: ${NETWORK:-test_network}

@@ -3,7 +3,6 @@ version: '3.9'
 services:
   cht-upgrade-service:
     image: public.ecr.aws/s5s3h4s7/cht-upgrade-service:latest
-    container_name: cht-upgrade-service
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DOCKER_CONFIG_PATH}:/config
@@ -30,6 +29,7 @@ services:
       - ORGANISATION
       - DEPARTMENT
       - DOCKER_CONFIG=/config
+      - COMPOSE_PROJECT_NAME=cht
 
 networks:
   cht-net:

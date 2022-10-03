@@ -8,7 +8,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./docker-compose:/docker-compose
     command: node /app/src/index.js
+    networks:
+      test-network-up:
     environment:
       - FOO
       - BAR
       - COMPOSE_PROJECT_NAME=test
+      - NETWORK
+
+networks:
+  test-network-up:
+    name: ${NETWORK:-test_network}
+    external: true

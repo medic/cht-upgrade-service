@@ -222,4 +222,6 @@ module.exports = {
   up,
   getServiceEnv,
   setEnv,
+  upgrade,
+  takeDownNetwork,
 };
