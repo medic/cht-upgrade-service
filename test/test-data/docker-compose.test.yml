@@ -11,3 +11,4 @@ services:
     environment:
       - FOO
       - BAR
+      - COMPOSE_PROJECT_NAME=test
