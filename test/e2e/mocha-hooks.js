@@ -14,10 +14,8 @@ module.exports = {
       await utils.runScript('registry.sh');
       await utils.runScript('publish.sh');
 
-      await utils.createNetwork();
-
       await utils.serviceComposeCommand('up --build -d');
-      await utils.serviceComposeCommand('down --remove-orphans -t 1');
+      await utils.serviceComposeCommand('rm -fs');
     },
 
     beforeEach: async () => {
@@ -29,8 +27,12 @@ module.exports = {
       if (this.currentTest.state === 'failed') {
         await utils.serviceComposeCommand('logs');
       }
-      await utils.serviceComposeCommand('down --remove-orphans -t 1');
-      await utils.testComposeCommand(['one-two.yml', 'three.yml'], 'down --remove-orphans -t 1');
+      const services = await utils.serviceComposeCommand('ps -q');
+      if (services.length) {
+        await utils.serviceComposeCommand('rm -fs');
+      }
+
+      await utils.testComposeCommand(['one-two.yml', 'three.yml'], 'rm -fs');
     },
   }
 };
