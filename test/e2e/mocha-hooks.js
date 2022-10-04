@@ -14,6 +14,8 @@ module.exports = {
       await utils.runScript('registry.sh');
       await utils.runScript('publish.sh');
 
+      await utils.createNetwork();
+
       await utils.serviceComposeCommand('up --build -d');
       await utils.serviceComposeCommand('down --remove-orphans -t 1');
     },

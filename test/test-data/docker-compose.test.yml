@@ -19,4 +19,5 @@ services:
 networks:
   test-network-up:
     name: ${NETWORK:-test_network}
+    # if not external, docker-compose down will fail because there are active endpoints
     external: true

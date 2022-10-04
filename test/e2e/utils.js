@@ -10,6 +10,7 @@ const PROJECT_NAME = 'the_project';
 process.env.NETWORK = NETWORK;
 process.env.CHT_COMPOSE_PROJECT_NAME = PROJECT_NAME;
 const DOCKER_COMPOSE_CLI = 'docker-compose';
+const DOCKER_CLI = 'docker';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
 const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-compose');
@@ -40,17 +41,17 @@ const runScript = (file, ...args) => {
   });
 };
 
-const composeCommand = (files, ...params) => {
+const dockerCommand = (cliCommand, files, ...params) => {
   files = Array.isArray(files) ? files : [files];
   const args = [
     ...files.map(file => (['-f', file])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
 
-  console.log(DOCKER_COMPOSE_CLI, ...args);
+  console.log(cliCommand, ...args);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, args, { env: { ...process.env, ...env } });
+    const proc = spawn(cliCommand, args, { env: { ...process.env, ...env } });
     proc.on('error', (err) => reject(err));
 
     let err = '';
@@ -73,7 +74,7 @@ const composeCommand = (files, ...params) => {
   });
 };
 
-const serviceComposeCommand = (...args) => composeCommand(DOCKER_COMPOSE_FILE, ...args);
+const serviceComposeCommand = (...args) => dockerCommand(DOCKER_COMPOSE_CLI, DOCKER_COMPOSE_FILE, ...args);
 const testComposeCommand = (fileNames, ...args) => {
   fileNames = Array.isArray(fileNames) ? fileNames : [fileNames];
   const filePaths = fileNames
@@ -84,7 +85,17 @@ const testComposeCommand = (fileNames, ...args) => {
     return;
   }
 
-  return composeCommand(filePaths, ...['-p', PROJECT_NAME, ...args]);
+  return dockerCommand(DOCKER_COMPOSE_CLI, filePaths, ...['-p', PROJECT_NAME, ...args]);
+};
+const createNetwork = async () => {
+  try {
+    await dockerCommand(DOCKER_CLI, [], 'network create', NETWORK);
+  } catch (err) {
+    if (err.endsWith('already exists\n')) {
+      return;
+    }
+    throw err;
+  }
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -226,7 +237,6 @@ module.exports = {
   getServiceVersion,
 
   runScript,
-  composeCommand,
   serviceComposeCommand,
   testComposeCommand,
   fetchJson,
@@ -241,4 +251,5 @@ module.exports = {
   setEnv,
   upgrade,
   waitForServiceContainersUp,
+  createNetwork,
 };
