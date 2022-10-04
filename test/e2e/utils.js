@@ -5,7 +5,10 @@ const fs = require('fs');
 
 let env;
 const setEnv = (newEnv) => env = newEnv;
-
+const NETWORK = 'the_network';
+const PROJECT_NAME = 'the_project';
+process.env.NETWORK = NETWORK;
+process.env.CHT_COMPOSE_PROJECT_NAME = PROJECT_NAME;
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
@@ -81,7 +84,7 @@ const testComposeCommand = (fileNames, ...args) => {
     return;
   }
 
-  return composeCommand(filePaths, ...['-p', 'test', ...args]);
+  return composeCommand(filePaths, ...['-p', PROJECT_NAME, ...args]);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -106,6 +109,7 @@ const upgrade = async (fileNames, service, body) => {
       'npm run upgrade --', Buffer.from(payload).toString('base64')
     );
   } catch (err) {
+    // this is expected to fail, because the container is restarted during the upgrade process
     return err;
   }
 };

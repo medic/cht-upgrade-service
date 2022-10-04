@@ -29,7 +29,7 @@ services:
       - ORGANISATION
       - DEPARTMENT
       - DOCKER_CONFIG=/config
-      - COMPOSE_PROJECT_NAME=cht
+      - CHT_COMPOSE_PROJECT_NAME=${CHT_COMPOSE_PROJECT_NAME:-cht}
 
 networks:
   cht-net:

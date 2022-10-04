@@ -3,11 +3,11 @@ const childProcess = require('child_process');
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 
 const composeCommand = (filePaths, ...params) => {
-  const { COMPOSE_PROJECT_NAME } = process.env;
+  const { CHT_COMPOSE_PROJECT_NAME } = process.env;
   filePaths = Array.isArray(filePaths) ? filePaths : [filePaths];
 
   const args = [
-    ...['-p', COMPOSE_PROJECT_NAME],
+    ...['-p', CHT_COMPOSE_PROJECT_NAME],
     ...filePaths.map(filePath => (['-f', filePath])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();

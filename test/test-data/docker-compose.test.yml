@@ -13,7 +13,7 @@ services:
     environment:
       - FOO
       - BAR
-      - COMPOSE_PROJECT_NAME=test
+      - CHT_COMPOSE_PROJECT_NAME=${CHT_COMPOSE_PROJECT_NAME:-test}
       - NETWORK
 
 networks:

@@ -23,7 +23,7 @@ describe('upgrade', () => {
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('3.0.0');
   });
 
-  it('should upgrade one docker-compose file over internal network', async () => {
+  it('should upgrade one docker-compose file over docker network', async () => {
     await utils.setVersion('one-two.yml', '1.0.0');
     await utils.up();
 

@@ -15,7 +15,7 @@ describe('docker-compose cli', () => {
       on: sinon.stub().callsFake((data, cb) => childPprocess.stderrCb = cb),
     };
     childPprocess.on = sinon.stub().callsFake((event, cb) => childPprocess.events[event] = cb);
-    process.env = { COMPOSE_PROJECT_NAME: 'cht' };
+    process.env = { CHT_COMPOSE_PROJECT_NAME: 'cht' };
   });
 
   describe('validate', () => {
@@ -97,7 +97,7 @@ describe('docker-compose cli', () => {
 
     it('should up multiple files at once', async () => {
       sinon.spy(console, 'log');
-      process.env.COMPOSE_PROJECT_NAME = 'somerandomname';
+      process.env.CHT_COMPOSE_PROJECT_NAME = 'somerandomname';
 
       const result = dockerComposeCli.up(['path/to/file1.yml', 'path/to/file2.yml', 'path/to/file3.yml']);
 
