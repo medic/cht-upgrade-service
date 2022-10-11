@@ -2,19 +2,19 @@ const childProcess = require('child_process');
 const dockerComposeCli = require('../../src/docker-compose-cli');
 
 describe('docker-compose cli', () => {
-  let childPprocess;
+  let spawnedProcess;
 
   beforeEach(() => {
-    childPprocess = { };
-    sinon.stub(childProcess, 'spawn').returns(childPprocess);
-    childPprocess.events = {};
-    childPprocess.stdout = {
-      on: sinon.stub().callsFake((data, cb) => childPprocess.stdoutCb = cb),
+    spawnedProcess = { };
+    sinon.stub(childProcess, 'spawn').returns(spawnedProcess);
+    spawnedProcess.events = {};
+    spawnedProcess.stdout = {
+      on: sinon.stub().callsFake((data, cb) => spawnedProcess.stdoutCb = cb),
     };
-    childPprocess.stderr = {
-      on: sinon.stub().callsFake((data, cb) => childPprocess.stderrCb = cb),
+    spawnedProcess.stderr = {
+      on: sinon.stub().callsFake((data, cb) => spawnedProcess.stderrCb = cb),
     };
-    childPprocess.on = sinon.stub().callsFake((event, cb) => childPprocess.events[event] = cb);
+    spawnedProcess.on = sinon.stub().callsFake((event, cb) => spawnedProcess.events[event] = cb);
     process.env = { CHT_COMPOSE_PROJECT_NAME: 'cht' };
   });
 
@@ -30,8 +30,8 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.events.exit(0); // exit code 0
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.events.exit(0); // exit code 0
 
       expect(await result).to.equal(true);
     });
@@ -47,8 +47,8 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht','-f', filename, 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.events.exit(14); // exit code 14
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.events.exit(14); // exit code 14
 
       expect(await result).to.equal(false);
     });
@@ -64,8 +64,8 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht','-f', filename, 'config' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.events.error({ some: 'error' });
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.events.error({ some: 'error' });
 
       expect(await result).to.equal(false);
     });
@@ -84,10 +84,10 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.stdoutCb('a');
-      childPprocess.stdoutCb('b');
-      childPprocess.events.exit(0);
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.stdoutCb('a');
+      spawnedProcess.stdoutCb('b');
+      spawnedProcess.events.exit(0);
 
       await result;
 
@@ -113,10 +113,10 @@ describe('docker-compose cli', () => {
         ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.stdoutCb('thing1');
-      childPprocess.stdoutCb('thing2');
-      childPprocess.events.exit(0);
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.stdoutCb('thing1');
+      spawnedProcess.stdoutCb('thing2');
+      spawnedProcess.events.exit(0);
 
       await result;
 
@@ -134,8 +134,8 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.events.error({ an: 'error' });
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.events.error({ an: 'error' });
       await expect(result).to.be.rejected.and.eventually.deep.equal({ an: 'error' });
     });
 
@@ -149,11 +149,11 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.stderrCb('error1');
-      childPprocess.stderrCb('error2');
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.stderrCb('error1');
+      spawnedProcess.stderrCb('error2');
 
-      childPprocess.events.exit(321);
+      spawnedProcess.events.exit(321);
       await expect(result).to.be.rejectedWith('error1error2');
     });
   });
@@ -171,10 +171,10 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'pull' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.stdoutCb('logging');
-      childPprocess.stdoutCb('things');
-      childPprocess.events.exit(0);
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.stdoutCb('logging');
+      spawnedProcess.stdoutCb('things');
+      spawnedProcess.events.exit(0);
 
       await result;
 
@@ -192,8 +192,8 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'pull' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.events.error({ error: 'boom' });
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.events.error({ error: 'boom' });
       await expect(result).to.be.rejected.and.eventually.deep.equal({ error: 'boom' });
     });
 
@@ -207,11 +207,11 @@ describe('docker-compose cli', () => {
         [ '-p', 'cht', '-f', filename, 'up', '-d', '--remove-orphans' ],
         { stdio: ['ignore', 'pipe', 'pipe'] },
       ]);
-      expect(childPprocess.events).to.have.keys(['error', 'exit']);
-      childPprocess.stderrCb('errors');
-      childPprocess.stderrCb('happen');
+      expect(spawnedProcess.events).to.have.keys(['error', 'exit']);
+      spawnedProcess.stderrCb('errors');
+      spawnedProcess.stderrCb('happen');
 
-      childPprocess.events.exit(321);
+      spawnedProcess.events.exit(321);
       await expect(result).to.be.rejectedWith('errorshappen');
     });
   });
