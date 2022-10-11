@@ -223,6 +223,7 @@ const getServiceEnv = async (file, service, envVarName) => {
 
 module.exports = {
   url: 'http://localhost:5008/',
+  // eslint-disable-next-line max-len
   networkRemoveFailRe: /failed to remove network the_network: Error response from daemon: error while removing network: network the_network id .* has active endpoints/,
   getServiceVersion,
 
