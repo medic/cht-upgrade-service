@@ -14,11 +14,13 @@ Installation and usage is achieved entirely with docker-compose.
 
 #### Download and save CHT-Core docker-compose yml file. 
 
-Todo steps??
+###### Todo improve steps
+The docker-compose yml files are attached to the staging document for each branch. After downloading, create a folder on your computer and save both in the same folder. 
 
 #### Download and save CHT upgrade service docker-compose yml file.
 
-Todo steps??
+###### Todo improve steps
+Save [this file](https://github.com/medic/cht-upgrade-service/blob/main/docker-compose.yml) in a new folder on your computer - a different folder than the one you're keeping the CHT docker-compose files. 
 
 #### Export the environment variables:
 
@@ -47,6 +49,8 @@ Todo steps??
 
 
 #### Run
+Start the `cht-upgrade-service` container. The container should start the CHT if you've already saved the docker-compose files and passed their location to the service.
+
 ```shell
 docker-compose up -f <path to upgrade service docker-compose yml file> -d
 ```
