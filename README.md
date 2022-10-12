@@ -14,36 +14,41 @@ Installation and usage is achieved entirely with docker-compose.
 
 #### Download and save CHT-Core docker-compose yml file. 
 
-Todo steps??
+##### Todo improve steps
+The docker-compose yml files are attached to the staging document for each branch. After downloading, create a folder on your computer and save both in the same folder.
 
 #### Download and save CHT upgrade service docker-compose yml file.
 
-Todo steps??
+##### Todo improve steps
+
+Save this file in a new folder on your computer - a different folder than the one you're keeping the CHT docker-compose files.
 
 #### Export the environment variables:
 
-| Name            | Required | Description                                                                                                                                                                                                                                  |
-|-----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `CHT_COMPOSE_PATH` | yes      | Absolute path to the folder where the CHT docker-compose file is saved.                                                                                                                                                                      | 
-| `COUCHDB_USER`  | yes      | CouchDb main admin account username.                                                                                                                                                                                                         |
-| `COUCHDB_PASSWORD` | yes      | CouchDb main admin account password.                                                                                                                                                                                                         | 
+| Name            | Required | Description                                                                                                                                                                                                                                |
+|-----------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `CHT_COMPOSE_PATH` | yes      | Absolute path to the folder where the CHT docker-compose file is saved.                                                                                                                                                                    | 
+| `COUCHDB_USER`  | yes      | CouchDb main admin account username.                                                                                                                                                                                                       |
+| `COUCHDB_PASSWORD` | yes      | CouchDb main admin account password.                                                                                                                                                                                                       | 
 | `COUCHDB_SECRET` | yes      | Secret that is used by the CouchDB peers to communicate with each other and to generate authentication cookies. This field is mandatory if you are running CouchDb clustered mode to make the same authentication cookie valid on all nodes. |
-| `COUCHDB_DATA`  | yes      | Absolute path to the folder that will serve as CouchDb data location.                                                                                                                                                                        |
-| `DOCKER_CONFIG_PATH` | no       | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries.                                               |
-| `COUCHDB_UUID`  | no       | The uuid of the CouchDb Server                                                                                                                                                                                                               |
-| `API_PORT`      | no       | Defaults to 5988. The port on which CHT-Api is available on the network.                                                                                                                                                                     | 
-| `MARKET_URL_READ` | no       | Defaults to `https://staging.dev.medicmobile.org`. Points to the source of the CHT-Core staging server.                                                                                                                                      |                                                                |                                                                 |
-| `BUILDS_SERVER` | no       | Defaults to `_couch/builds`. Points to the source of the CHT-Core staging server database.                                                                                                                                                   |
-| `CERTIFICATE_MODE` | yes      | SSL certificate mode. Defaults to `OWN_CERT`, instructs to use existent certificate. Other options are `AUTO_GENERATE`, which generates a new certificate with `letsencrypt`, or `SELF_SIGNED` which generates a self signed certificate.    |
-| `SSL_CERT_FILE_PATH` | no       | Path to the existent SSL Certificate. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                                |
-| `SSL_KEY_FILE_PATH` | no       | Path to the existent SSL Certificate Key. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                            |
-| `COMMON_NAME`   | no       | The domain name of the instance that the SSL certificate is for. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                       |  
-| `EMAIL`     | no       | SSL Certificate registration email. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                    | 
-| `COUNTRY` | no       | SSL Certificate registration country. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                      | 
-| `STATE` | no       | SSL Certificate registration state. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                        |
-| `LOCALITY` | no       | SSL Certificate registration locality. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                     |
-| `ORGANISATION` | no       | SSL Certificate registration organization. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                 |\
-| `DEPARTMENT` | no       | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                                                                                    |
+| `COUCHDB_DATA`  | yes      | Absolute path to the folder that will serve as CouchDb data location.                                                                                                                                                                      |
+| `DOCKER_CONFIG_PATH` | no       | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries.                                             |
+| `COUCHDB_UUID`  | no       | The uuid of the CouchDb Server                                                                                                                                                                                                             |
+| `CHT_COMPOSE_PROJECT_NAME` | no | docker-compose project name to use for CHT-Core. Defaults to `cht` | 
+| `CHT_NETWORK` | no | docker network to use for cht-core and cht-upgrade-service. Defaults to `cht-net` | 
+| `API_PORT`      | no       | Defaults to 5988. The port on which CHT-Api is available on the network.                                                                                                                                                                   | 
+| `MARKET_URL_READ` | no       | Defaults to `https://staging.dev.medicmobile.org`. Points to the source of the CHT-Core staging server.                                                                                                                                    |                                                                |                                                                 |
+| `BUILDS_SERVER` | no       | Defaults to `_couch/builds`. Points to the source of the CHT-Core staging server database.                                                                                                                                                 |
+| `CERTIFICATE_MODE` | yes      | SSL certificate mode. Defaults to `OWN_CERT`, instructs to use existent certificate. Other options are `AUTO_GENERATE`, which generates a new certificate with `letsencrypt`, or `SELF_SIGNED` which generates a self signed certificate.  |
+| `SSL_CERT_FILE_PATH` | no       | Path to the existent SSL Certificate. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                              |
+| `SSL_KEY_FILE_PATH` | no       | Path to the existent SSL Certificate Key. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                          |
+| `COMMON_NAME`   | no       | The domain name of the instance that the SSL certificate is for. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                     |  
+| `EMAIL`     | no       | SSL Certificate registration email. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                  | 
+| `COUNTRY` | no       | SSL Certificate registration country. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                    | 
+| `STATE` | no       | SSL Certificate registration state. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                      |
+| `LOCALITY` | no       | SSL Certificate registration locality. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                   |
+| `ORGANISATION` | no       | SSL Certificate registration organization. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                               |\
+| `DEPARTMENT` | no       | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                                                                                  |
 
 
 #### Run
