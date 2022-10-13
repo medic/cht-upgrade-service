@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "scripts": {
     "foo": "echo $FOO",
-    "bar": "echo $BAR"
+    "bar": "echo $BAR",
+    "upgrade": "node ./upgrade.js"
   }
 }
