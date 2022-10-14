@@ -14,11 +14,14 @@ Installation and usage is achieved entirely with docker-compose.
 
 #### Download and save CHT-Core docker-compose yml file. 
 
-Todo steps??
+##### Todo improve steps
+The docker-compose yml files are attached to the staging document for each branch. After downloading, create a folder on your computer and save both in the same folder.
 
 #### Download and save CHT upgrade service docker-compose yml file.
 
-Todo steps??
+##### Todo improve steps
+
+Save this file in a new folder on your computer - a different folder than the one you're keeping the CHT docker-compose files.
 
 #### Export the environment variables:
 

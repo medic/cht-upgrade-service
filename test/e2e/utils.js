@@ -5,7 +5,10 @@ const fs = require('fs');
 
 let env;
 const setEnv = (newEnv) => env = newEnv;
-
+const NETWORK = 'the_network';
+const PROJECT_NAME = 'the_project';
+process.env.NETWORK = NETWORK;
+process.env.CHT_COMPOSE_PROJECT_NAME = PROJECT_NAME;
 const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
@@ -37,7 +40,7 @@ const runScript = (file, ...args) => {
   });
 };
 
-const composeCommand = (files, ...params) => {
+const dockerCommand = (files, ...params) => {
   files = Array.isArray(files) ? files : [files];
   const args = [
     ...files.map(file => (['-f', file])),
@@ -70,7 +73,7 @@ const composeCommand = (files, ...params) => {
   });
 };
 
-const serviceComposeCommand = (...args) => composeCommand(DOCKER_COMPOSE_FILE, ...args);
+const serviceComposeCommand = (...args) => dockerCommand(DOCKER_COMPOSE_FILE, ...args);
 const testComposeCommand = (fileNames, ...args) => {
   fileNames = Array.isArray(fileNames) ? fileNames : [fileNames];
   const filePaths = fileNames
@@ -81,7 +84,7 @@ const testComposeCommand = (fileNames, ...args) => {
     return;
   }
 
-  return composeCommand(filePaths, ...args);
+  return dockerCommand(filePaths, ...['-p', PROJECT_NAME, ...args]);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -95,6 +98,20 @@ const fetchJson = async (url, opts = {}) => {
   }
 
   throw await response.json();
+};
+
+const upgrade = async (fileNames, service, body) => {
+  const payload = JSON.stringify({ docker_compose: body });
+  try {
+    return await testComposeCommand(
+      fileNames,
+      'exec -T', service,
+      'npm run upgrade --', Buffer.from(payload).toString('base64')
+    );
+  } catch (err) {
+    // this is expected to fail, because the container is restarted during the upgrade process
+    return err;
+  }
 };
 
 const setVersion = async (file, version, write = true) => {
@@ -206,10 +223,10 @@ const getServiceEnv = async (file, service, envVarName) => {
 
 module.exports = {
   url: 'http://localhost:5008/',
+  networkRemoveFailRe: /error while removing network: network the_network id .* has active endpoints/,
   getServiceVersion,
 
   runScript,
-  composeCommand,
   serviceComposeCommand,
   testComposeCommand,
   fetchJson,
@@ -222,4 +239,6 @@ module.exports = {
   up,
   getServiceEnv,
   setEnv,
+  upgrade,
+  waitForServiceContainersUp,
 };

@@ -27,7 +27,13 @@ module.exports = {
       if (this.currentTest.state === 'failed') {
         await utils.serviceComposeCommand('logs');
       }
-      await utils.serviceComposeCommand('down --remove-orphans -t 1');
+      try {
+        await utils.serviceComposeCommand('down --remove-orphans -t 1');
+      } catch (err) {
+        if (!err.match(utils.networkRemoveFailRe)) {
+          throw err;
+        }
+      }
       await utils.testComposeCommand(['one-two.yml', 'three.yml'], 'down --remove-orphans -t 1');
     },
 
