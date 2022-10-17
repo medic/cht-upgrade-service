@@ -25,33 +25,33 @@ Save this file in a new folder on your computer - a different folder than the on
 
 #### Export the environment variables:
 
-| Name            | Required | Description                                                                                                                                                                                                                                  |
-|-----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `CHT_COMPOSE_PATH` | yes      | Absolute path to the folder where the two CHT docker-compose files are saved.                                                                                                                                                                      | 
-| `COUCHDB_USER`  | yes      | CouchDB main admin account username.                                                                                                                                                                                                         |
-| `COUCHDB_PASSWORD` | yes      | CouchDB main admin account password.                                                                                                                                                                                                         | 
-| `COUCHDB_SECRET` | yes      |  CouchDB secret used by peers to communicate and to generate authentication cookies.  Mandatory for CouchDB clustered mode to synchronize authentication cookie between nodes. |
-| `COUCHDB_UUID`  | no       | The UUID of the CouchDB Server used in [identifying the cluster when replicating](https://docs.couchdb.com/en/stable/setup/cluster.html#preparing-couchdb-nodes-to-be-joined-into-a-cluster)  |
-| `COUCHDB_DATA`  | yes      | Absolute path to the folder that will serve as CouchDB data location.                                                                                                                                                                        |
-| `COUCHDB_SERVERS`          | no       | Comma separated list of all CouchDB services. Defaults to `couchdb`.                                                                                                                                                                         |
-| `MARKET_URL_READ` | no       | URL for the CHT Core to check for and retrieve updates. Defaults to `https://staging.dev.medicmobile.org`                                                                                                                                      |                                                                |                                                                 |
-| `BUILDS_SERVER` | no       | Path for the CHT Core to check for and retrieve updates. Appended to `MARKET_URL_READ`. Defaults to `_couch/builds`. |
-| `NGINX_HTTP_PORT`      | no       | The port on which CHT-API is available on the host network. Defaults to `80`. |
-| `NGINX_HTTPS_PORT`      | no       | The secure port on which CHT-API is available on the host network. Defaults to `443`. |
-| `CERTIFICATE_MODE` | no      | SSL certificate mode.  `OWN_CERT` instructs to use existent certificate. Other options are `AUTO_GENERATE`, which generates a new certificate with Let's Encrypt's [Certbot](https://certbot.eff.org/), or `SELF_SIGNED` which generates a self signed certificate.  Defaults to `OWN_CERT`  |
-| `SSL_VOLUME_MOUNT_PATH`    | no       | Volume path that hosts SSL certificates. Used when `CERTIFICATE_MODE` is `OWN_CERT`.                                                                                                                                                         |
-| `SSL_CERT_FILE_PATH` | no       | Path to the existent SSL Certificate. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                                |
-| `SSL_KEY_FILE_PATH` | no       | Path to the existent SSL Certificate Key. Required and used when `CERTIFICATE_MODE` is `OWN_CERT`                                                                                                                                            |
-| `COMMON_NAME`   | no       | The domain name of the instance that the SSL certificate is for. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                       |  
-| `EMAIL`     | no       | SSL Certificate registration email. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                    | 
-| `COUNTRY` | no       | SSL Certificate registration country. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                      | 
-| `STATE` | no       | SSL Certificate registration state. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                        |
-| `LOCALITY` | no       | SSL Certificate registration locality. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                     |
-| `ORGANISATION` | no       | SSL Certificate registration organization. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                 |\
-| `DEPARTMENT` | no       | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                   |
-| `CHT_COMPOSE_PROJECT_NAME` | no       | docker-compose project name to use for CHT-Core. Defaults to `cht`                                                                                                                                                                           | 
-| `CHT_NETWORK`              | no       | docker network to use for cht-core and cht-upgrade-service. Defaults to `cht-net`                                                                                                                                                            |
-| `DOCKER_CONFIG_PATH` | no       | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries.                                               |
+| Name | Required | Description | Example |
+|------|----------|-------------|---------|
+| `CHT_COMPOSE_PATH` | yes | Absolute path to the folder where the two CHT docker-compose files are saved. | `/home/cht` |
+| `COUCHDB_USER` | yes | CouchDB main admin account username. | `admin` |
+| `COUCHDB_PASSWORD` | yes | CouchDB main admin account password. | `thump-quake-agony-kite-civil-surf-mama` |
+| `COUCHDB_SECRET` | yes | CouchDB secret used by peers to communicate and to generate authentication cookies. Mandatory for CouchDB clustered mode to synchronize authentication cookie between nodes. | `kung-botch-pants-niece-lady-quill-elbow` |
+| `COUCHDB_UUID` | no | The UUID of the CouchDB Server used in [identifying the cluster when replicating](https://docs.couchdb.com/en/stable/setup/cluster.html#preparing-couchdb-nodes-to-be-joined-into-a-cluster) | `60c9e8234dfba3e2fdab04bf92001142` |
+| `COUCHDB_DATA` | yes | Absolute path to the folder that will serve as CouchDB data location. | `/home/cht/srv` |
+| `COUCHDB_SERVERS` | no | Comma separated list of all CouchDB services. Defaults to `couchdb`. | `couchdb.1,couchdb.2,couchdb.3` |
+| `MARKET_URL_READ` | no | URL for the CHT Core to check for and retrieve updates. Defaults to `https://staging.dev.medicmobile.org` | `https://staging.dev.medicmobile.org` |
+| `BUILDS_SERVER` | no | Path for the CHT Core to check for and retrieve updates. Appended to `MARKET_URL_READ`. Defaults to `_couch/builds`. | `_couch/builds` |
+| `NGINX_HTTP_PORT` | no | The port on which CHT-API is available on the host network. Defaults to `80`. | `80` |
+| `NGINX_HTTPS_PORT` | no | The secure port on which CHT-API is available on the host network. Defaults to `443`. | `443` |
+| `CERTIFICATE_MODE` | no | SSL certificate mode. `OWN_CERT` instructs to use existent certificate. Other options are `AUTO_GENERATE`, which generates a new certificate with Let's Encrypt's [Certbot](https://certbot.eff.org/), or `SELF_SIGNED` which generates a self signed certificate. Defaults to `OWN_CERT` | `OWN_CERT` |
+| `SSL_VOLUME_MOUNT_PATH` | no | Volume path that hosts SSL certificates. Used when `CERTIFICATE_MODE` is `OWN_CERT`. | `/home/cht/certs` |
+| `SSL_CERT_FILE_PATH` | no | Path to the existent SSL Certificate. Required and used when `CERTIFICATE_MODE` is `OWN_CERT` | `/home/cht/certs/cert.pem` |
+| `SSL_KEY_FILE_PATH` | no | Path to the existent SSL Certificate Key. Required and used when `CERTIFICATE_MODE` is `OWN_CERT` | `/home/cht/certs/key.pem` |
+| `COMMON_NAME` | no | The domain name of the instance that the SSL certificate is for. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `example.app.medic.org` |
+| `EMAIL` | no | SSL Certificate registration email. Required when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `/home/cht/certs/key.pem` |
+| `COUNTRY` | no | SSL Certificate registration country. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `US` |
+| `STATE` | no | SSL Certificate registration state. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `CO` |
+| `LOCALITY` | no | SSL Certificate registration locality. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `Denver` |
+| `ORGANISATION` | no | SSL Certificate registration organization. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `Medic` |
+| `DEPARTMENT` | no | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `Department of Information Security` |
+| `CHT_COMPOSE_PROJECT_NAME` | no | docker-compose project name to use for CHT-Core. Defaults to `cht` | `cht-dev-4-alpha` |
+| `CHT_NETWORK` | no | docker network to use for cht-core and cht-upgrade-service. Defaults to `cht-net` | `cht-dev-4-alpha-net` |
+| `DOCKER_CONFIG_PATH` | no | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries. | `/home/cht/aws_conf` |
 
 
 #### Run
@@ -86,10 +86,10 @@ Request body:
 ```Accepts: application/json```
 ```json
 {
-  "docker_compose": {
-    "<file_name1>": "<file contents>",
-    "<file_name2>": "<file contents>"
-  }
+ "docker_compose": {
+ "<file_name1>": "<file contents>",
+ "<file_name2>": "<file contents>"
+ }
 }
 ```
 
@@ -97,8 +97,8 @@ Expected successful response:
 ```HTTP/1.1 200```
 ```json
 {
-  "<file_name1>": { "ok": true },
-  "<file_name2>": { "ok": true }
+ "<file_name1>": { "ok": true },
+ "<file_name2>": { "ok": true }
 }
 ```
 
@@ -106,8 +106,8 @@ Expected successful response when a file is skipped:
 ```HTTP/1.1 200```
 ```json
 {
-  "<existent_file>": { "ok": true },
-  "<non_existent_file>": { "ok": false, "reason": "Existing installation not found. Use '/install' API to install." }
+ "<existent_file>": { "ok": true },
+ "<non_existent_file>": { "ok": false, "reason": "Existing installation not found. Use '/install' API to install." }
 }
 ```
 
@@ -115,8 +115,8 @@ Expected error response:
 ```HTTP/1.1 500```
 ```json
 {
-  "error": true,
-  "reason": "<error details>"
+ "error": true,
+ "reason": "<error details>"
 }
 ```
 
@@ -134,10 +134,10 @@ Request body:
 ```Accepts: application/json```
 ```json
 {
-  "docker_compose": {
-    "<file_name1>": "<file contents>",
-    "<file_name2>": "<file contents>"
-  }
+ "docker_compose": {
+ "<file_name1>": "<file contents>",
+ "<file_name2>": "<file contents>"
+ }
 }
 ```
 
@@ -145,8 +145,8 @@ Expected successful response:
 ```HTTP/1.1 200```
 ```json
 {
-  "<file_name1>": { "ok": true },
-  "<file_name2>": { "ok": true }
+ "<file_name1>": { "ok": true },
+ "<file_name2>": { "ok": true }
 }
 ```
 
@@ -154,8 +154,8 @@ Expected successful response when a file is skipped:
 ```HTTP/1.1 200```
 ```json
 {
-  "<existent_file>": { "ok": false, "reason": "Existing installation found. Use '/upgrade' API to upgrade." },
-  "<non_existent_file>": { "ok": true }
+ "<existent_file>": { "ok": false, "reason": "Existing installation found. Use '/upgrade' API to upgrade." },
+ "<non_existent_file>": { "ok": true }
 }
 ```
 
@@ -163,8 +163,8 @@ Expected error response:
 ```HTTP/1.1 500```
 ```json
 {
-  "error": true,
-  "reason": "<error details>"
+ "error": true,
+ "reason": "<error details>"
 }
 ```
 
