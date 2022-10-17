@@ -33,7 +33,7 @@ Save this file in a new folder on your computer - a different folder than the on
 | `COUCHDB_SECRET` | yes | CouchDB secret used by peers to communicate and to generate authentication cookies. Mandatory for CouchDB clustered mode to synchronize authentication cookie between nodes. | `kung-botch-pants-niece-lady-quill-elbow` |
 | `COUCHDB_UUID` | no | The UUID of the CouchDB Server used in [identifying the cluster when replicating](https://docs.couchdb.com/en/stable/setup/cluster.html#preparing-couchdb-nodes-to-be-joined-into-a-cluster) | `60c9e8234dfba3e2fdab04bf92001142` |
 | `COUCHDB_DATA` | yes | Absolute path to the folder that will serve as CouchDB data location. | `/home/cht/srv` |
-| `COUCHDB_SERVERS` | no | Comma separated list of all CouchDB services. Defaults to `couchdb`. | `couchdb.1,couchdb.2,couchdb.3` |
+| `COUCHDB_SERVERS` | no | Comma separated list of all CouchDB services. Defaults to `couchdb`. | Single Node:`couchdb`<br/> Cluster:`couchdb.1,couchdb.2,couchdb.3` |
 | `MARKET_URL_READ` | no | URL for the CHT Core to check for and retrieve updates. Defaults to `https://staging.dev.medicmobile.org` | `https://staging.dev.medicmobile.org` |
 | `BUILDS_SERVER` | no | Path for the CHT Core to check for and retrieve updates. Appended to `MARKET_URL_READ`. Defaults to `_couch/builds`. | `_couch/builds` |
 | `NGINX_HTTP_PORT` | no | The port on which CHT-API is available on the host network. Defaults to `80`. | `80` |
