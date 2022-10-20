@@ -43,7 +43,7 @@ const pull = async (fileName) => {
     }
     throw err;
   }
-}
+};
 
 const up = (fileNames) => composeCommand(fileNames, 'up -d --remove-orphans');
 
