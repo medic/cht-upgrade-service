@@ -182,6 +182,7 @@ describe('docker-compose cli', () => {
       expect(console.log.calledWith('things')).to.equal(true);
     });
 
+    // https://docs.aws.amazon.com/AmazonECR/latest/userguide/common-errors.html
     it('should retry on rate exceeded error', async () => {
       const filename = 'path/to/file.yml';
       const result = dockerComposeCli.pull(filename);
@@ -199,6 +200,11 @@ describe('docker-compose cli', () => {
       await Promise.resolve();
 
       expect(childProcess.spawn.callCount).to.equal(3);
+      spawnedProcess.events.error({ message: 'Unknown: Rate exceeded' });
+
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(4);
       spawnedProcess.events.exit(0);
 
       await result;

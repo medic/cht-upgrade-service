@@ -39,7 +39,7 @@ const pull = async (fileName) => {
     await composeCommand(fileName, 'pull');
   } catch (err) {
     if (isRateExceededError(err)) {
-      return await pull(fileName);
+      return pull(fileName);
     }
     throw err;
   }
