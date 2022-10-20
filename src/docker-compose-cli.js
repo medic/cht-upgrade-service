@@ -1,6 +1,9 @@
 const childProcess = require('child_process');
 
 const DOCKER_COMPOSE_CLI = 'docker-compose';
+const RATE_EXCEEDED = 'Rate exceeded';
+
+const isRateExceededError = (err) => err && err.message && err.message.includes(RATE_EXCEEDED);
 
 const composeCommand = (filePaths, ...params) => {
   const { CHT_COMPOSE_PROJECT_NAME } = process.env;
@@ -31,7 +34,16 @@ const composeCommand = (filePaths, ...params) => {
   });
 };
 
-const pull = (fileName) => composeCommand(fileName, 'pull');
+const pull = async (fileName) => {
+  try {
+    await composeCommand(fileName, 'pull');
+  } catch (err) {
+    if (isRateExceededError(err)) {
+      return await pull(fileName);
+    }
+    throw err;
+  }
+}
 
 const up = (fileNames) => composeCommand(fileNames, 'up -d --remove-orphans');
 

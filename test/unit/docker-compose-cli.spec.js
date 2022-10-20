@@ -182,6 +182,28 @@ describe('docker-compose cli', () => {
       expect(console.log.calledWith('things')).to.equal(true);
     });
 
+    it('should retry on rate exceeded error', async () => {
+      const filename = 'path/to/file.yml';
+      const result = dockerComposeCli.pull(filename);
+
+      expect(childProcess.spawn.callCount).to.equal(1);
+      spawnedProcess.stderrCb('toomanyrequests: Rate exceeded');
+      spawnedProcess.events.exit(1);
+
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(2);
+      spawnedProcess.stderrCb('toomanyrequests: Rate exceeded');
+      spawnedProcess.events.exit(1);
+
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(3);
+      spawnedProcess.events.exit(0);
+
+      await result;
+    });
+
     it('should reject on error', async () => {
       const filename = 'path/to/filename.yml';
       const result = dockerComposeCli.pull(filename);
