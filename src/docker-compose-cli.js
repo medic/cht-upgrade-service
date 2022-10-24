@@ -34,12 +34,14 @@ const composeCommand = (filePaths, ...params) => {
   });
 };
 
-const pull = async (fileName) => {
+const pull = async (fileName, retry = 100) => {
   try {
     await composeCommand(fileName, 'pull');
   } catch (err) {
-    if (isRateExceededError(err)) {
-      return pull(fileName);
+    if (isRateExceededError(err) && retry > 0) {
+      console.warn('Pull rate limit exceeded. Retrying.');
+      await new Promise(r => setTimeout(r, 1000));
+      return pull(fileName, --retry);
     }
     throw err;
   }
