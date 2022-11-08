@@ -3,27 +3,54 @@ CHT Upgrade Service
 
 The CHT Upgrade Service provides an interface between CHT-Core API and Docker to allow easy startup and one-click upgrades from the CHT-Core Admin UI. 
 
-# Requirements
+## Requirements
 
 * Docker
 * docker-compose
 
-# Installation and usage
+### Directories 
 
-Installation and usage is achieved entirely with docker-compose. 
+To use the CHT Upgrade service, you need to have three directories:
+1. CHT Core & CouchDB compose files
+2. CouchDB database 
+3. Upgrade Service 
 
-#### Download and save CHT-Core docker-compose yml file. 
+## Example Usage
 
-##### Todo improve steps
-The docker-compose yml files are attached to the staging document for each branch. After downloading, create a folder on your computer and save both in the same folder.
+Assuming you wanted to create a new project called `cht-4-first-run` in your home directory and you want to use the least amount of env vars,  you would follow these steps below. It will create a self signed cert, use port `80` and port `443`. If you're doing a lot of testing, you might want to ensure no other docker containers are running with `docker kill $(docker ps  -q)`. Then follow these steps:
 
-#### Download and save CHT upgrade service docker-compose yml file.
+1. Create a directory to house your CHT Core and CouchDB compose files. You need a unique pair of these per project you run.  We'll use `cht-4-first-run`: 
+    ```
+    mkdir -p ~/cht-4-first-run/compose
+    cd ~/cht-4-first-run
+    ```
+1. Download CHT Core, CouchDB and Upgrade Service compose files into the new directory you just created: 
+    ```
+    cd ~/cht-4-first-run
+    curl -s -o ./compose/cht-couchdb.yml https://staging.dev.medicmobile.org/_couch/builds/medic:medic:master/docker-compose/cht-couchdb.yml
+    curl -s -o ./compose/cht-core.yml https://staging.dev.medicmobile.org/_couch/builds/medic:medic:master/docker-compose/cht-core.yml
+    curl -s -o docker-compose.yml https://raw.githubusercontent.com/medic/cht-upgrade-service/main/docker-compose.yml
+    ```
+1. Create an file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!):
+   ```
+   CHT_COMPOSE_PROJECT_NAME=4-first-run
+   COUCHDB_SECRET=password
+   DOCKER_CONFIG_PATH=${PWD}/compose
+   COUCHDB_DATA=${PWD}/couchd
+   CHT_COMPOSE_PATH=${PWD}/compose
+   COUCHDB_USER=medic
+   COUCHDB_PASSWORD=password
+   ```
+1. Call `up` with docker:
+   ```
+   cd ~/cht-4-first-run
+   docker compose up
+   ```
+ 1. Your instance should now be availabe at [localhost](https://localhost) with login `medic` and password `password`.  You will need to accept the self signed certificate the first time you access the instance. 
 
-##### Todo improve steps
+## Envirenment Variables
 
-Save this file in a new folder on your computer - a different folder than the one you're keeping the CHT docker-compose files.
-
-#### Export the environment variables:
+This is a list of all variables that can be used:
 
 | Name | Required | Description | Example |
 |------|----------|-------------|---------|
@@ -31,6 +58,7 @@ Save this file in a new folder on your computer - a different folder than the on
 | `COUCHDB_USER` | yes | CouchDB main admin account username. | `admin` |
 | `COUCHDB_PASSWORD` | yes | CouchDB main admin account password. | `thump-quake-agony-kite-civil-surf-mama` |
 | `COUCHDB_SECRET` | yes | CouchDB secret used by peers to communicate and to generate authentication cookies. Mandatory for CouchDB clustered mode to synchronize authentication cookie between nodes. | `kung-botch-pants-niece-lady-quill-elbow` |
+| `DOCKER_CONFIG_PATH` | yes | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries. | `/home/cht/aws_conf` |
 | `COUCHDB_UUID` | no | The UUID of the CouchDB Server used in [identifying the cluster when replicating](https://docs.couchdb.com/en/stable/setup/cluster.html#preparing-couchdb-nodes-to-be-joined-into-a-cluster) | `60c9e8234dfba3e2fdab04bf92001142` |
 | `COUCHDB_DATA` | yes | Absolute path to the folder that will serve as CouchDB data location. | `/home/cht/srv` |
 | `COUCHDB_SERVERS` | no | Comma separated list of all CouchDB services. Defaults to `couchdb`. | Single Node:`couchdb`<br/> Cluster:`couchdb.1,couchdb.2,couchdb.3` |
@@ -51,15 +79,11 @@ Save this file in a new folder on your computer - a different folder than the on
 | `DEPARTMENT` | no | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`. | `Department of Information Security` |
 | `CHT_COMPOSE_PROJECT_NAME` | no | docker-compose project name to use for CHT-Core. Defaults to `cht` | `cht-dev-4-alpha` |
 | `CHT_NETWORK` | no | docker network to use for cht-core and cht-upgrade-service. Defaults to `cht-net` | `cht-dev-4-alpha-net` |
-| `DOCKER_CONFIG_PATH` | no | Absolute path to your docker-config file to allow access to authenticated AWS ECR endpoints to pull private images. Omitting this value will only allow pulling from public Docker registries. | `/home/cht/aws_conf` |
 
 
-#### Run
-```shell
-docker-compose up -f <path to upgrade service docker-compose yml file> -d
-```
 
-# API
+
+## API
 
 The API is only available on the `cht-net` docker network, and listens to port `5008`. 
 
