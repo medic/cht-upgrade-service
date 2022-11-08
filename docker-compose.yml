@@ -34,6 +34,8 @@ services:
       - DOCKER_CONFIG=/config
       - CHT_COMPOSE_PROJECT_NAME=${CHT_COMPOSE_PROJECT_NAME:-cht}
       - CHT_NETWORK=${CHT_NETWORK:-cht-net}
+      - DOCKER_CONFIG_PATH
+      - CHT_COMPOSE_PATH
 
 networks:
   cht-net:
