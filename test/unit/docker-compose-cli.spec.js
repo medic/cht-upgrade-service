@@ -1,10 +1,13 @@
 const childProcess = require('child_process');
 const dockerComposeCli = require('../../src/docker-compose-cli');
 
+let clock;
+
 describe('docker-compose cli', () => {
   let spawnedProcess;
 
   beforeEach(() => {
+    clock = sinon.useFakeTimers();
     spawnedProcess = { };
     sinon.stub(childProcess, 'spawn').returns(spawnedProcess);
     spawnedProcess.events = {};
@@ -16,6 +19,10 @@ describe('docker-compose cli', () => {
     };
     spawnedProcess.on = sinon.stub().callsFake((event, cb) => spawnedProcess.events[event] = cb);
     process.env = { CHT_COMPOSE_PROJECT_NAME: 'cht' };
+  });
+
+  afterEach(() => {
+    clock.restore();
   });
 
   describe('validate', () => {
@@ -180,6 +187,56 @@ describe('docker-compose cli', () => {
 
       expect(console.log.calledWith('logging')).to.equal(true);
       expect(console.log.calledWith('things')).to.equal(true);
+    });
+
+    // https://docs.aws.amazon.com/AmazonECR/latest/userguide/common-errors.html
+    it('should retry on rate exceeded error', async () => {
+      const filename = 'path/to/file.yml';
+      const result = dockerComposeCli.pull(filename);
+
+      expect(childProcess.spawn.callCount).to.equal(1);
+      spawnedProcess.stderrCb('toomanyrequests: Rate exceeded');
+      spawnedProcess.events.exit(1);
+
+      await Promise.resolve();
+      clock.tick(1000);
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(2);
+      spawnedProcess.stderrCb('toomanyrequests: Rate exceeded');
+      spawnedProcess.events.exit(1);
+
+      await Promise.resolve();
+      clock.tick(1000);
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(3);
+      spawnedProcess.events.error({ message: 'Unknown: Rate exceeded' });
+
+      await Promise.resolve();
+      clock.tick(1000);
+      await Promise.resolve();
+
+      expect(childProcess.spawn.callCount).to.equal(4);
+      spawnedProcess.events.exit(0);
+
+      await result;
+    });
+
+    it('should throw error after 100 rate exceeded retries', async () => {
+      const filename = 'path/to/file.yml';
+      const result = dockerComposeCli.pull(filename);
+
+      for (let i = 0; i <= 100; i++) {
+        expect(childProcess.spawn.callCount).to.equal(i + 1);
+        spawnedProcess.stderrCb('toomanyrequests: Rate exceeded');
+        spawnedProcess.events.exit(1);
+
+        await Promise.resolve();
+        clock.tick(1000);
+        await Promise.resolve();
+      }
+      await expect(result).to.be.rejectedWith('toomanyrequests: Rate exceeded');
     });
 
     it('should reject on error', async () => {
