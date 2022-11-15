@@ -27,8 +27,8 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your hom
 1. Download CHT Core, CouchDB and Upgrade Service compose files into the new directory you just created: 
     ```
     cd ~/cht-4-first-run
-    curl -s -o ./compose/cht-couchdb.yml https://staging.dev.medicmobile.org/_couch/builds/medic:medic:master/docker-compose/cht-couchdb.yml
-    curl -s -o ./compose/cht-core.yml https://staging.dev.medicmobile.org/_couch/builds/medic:medic:master/docker-compose/cht-core.yml
+    curl -s -o ./compose/cht-couchdb.yml https://staging.dev.medicmobile.org/_couch/builds_4/medic:medic:master/docker-compose/cht-couchdb.yml
+    curl -s -o ./compose/cht-core.yml https://staging.dev.medicmobile.org/_couch/builds_4/medic:medic:master/docker-compose/cht-core.yml
     curl -s -o docker-compose.yml https://raw.githubusercontent.com/medic/cht-upgrade-service/main/docker-compose.yml
     ```
 1. Create an file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!):
