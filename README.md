@@ -35,9 +35,9 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your hom
    ```
    CHT_COMPOSE_PROJECT_NAME=4-first-run
    COUCHDB_SECRET=password
-   DOCKER_CONFIG_PATH=${PWD}/compose
-   COUCHDB_DATA=${PWD}/couchd
-   CHT_COMPOSE_PATH=${PWD}/compose
+   DOCKER_CONFIG_PATH=~/cht-4-first-run/compose
+   COUCHDB_DATA=~/cht-4-first-run/couchd
+   CHT_COMPOSE_PATH=~/cht-4-first-run/compose
    COUCHDB_USER=medic
    COUCHDB_PASSWORD=password
    ```
