@@ -17,7 +17,7 @@ To use the CHT Upgrade service, you need to have three directories:
 
 ## Example Usage
 
-Assuming you wanted to create a new project called `cht-4-first-run` in your home directory and you want to use the least amount of env vars,  you would follow these steps below. It will create a self signed cert, use port `80` and port `443`. If you're doing a lot of testing, you might want to ensure no other docker containers are running with `docker kill $(docker ps  -q)`. Then follow these steps:
+Assuming you wanted to create a new project called `cht-4-first-run` in your user `me`'s home directory, and you want to use the least amount of env vars,  you would follow these steps below. It will create a self signed cert, use port `80` and port `443`. If you're doing a lot of testing, you might want to ensure no other docker containers are running with `docker kill $(docker ps  -q)`. Then follow these steps:
 
 1. Create a directory to house your CHT Core and CouchDB compose files. You need a unique pair of these per project you run.  We'll use `cht-4-first-run`: 
     ```
@@ -31,13 +31,13 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your hom
     curl -s -o ./compose/cht-core.yml https://staging.dev.medicmobile.org/_couch/builds_4/medic:medic:master/docker-compose/cht-core.yml
     curl -s -o docker-compose.yml https://raw.githubusercontent.com/medic/cht-upgrade-service/main/docker-compose.yml
     ```
-1. Create an file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!):
+1. Create an file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!). Note if you're trying to run this locally that you replace `/home/me` with your actual home dir path:
    ```
    CHT_COMPOSE_PROJECT_NAME=4-first-run
    COUCHDB_SECRET=password
-   DOCKER_CONFIG_PATH=~/cht-4-first-run/compose
-   COUCHDB_DATA=~/cht-4-first-run/couchd
-   CHT_COMPOSE_PATH=~/cht-4-first-run/compose
+   DOCKER_CONFIG_PATH=/home/me/cht-4-first-run/compose
+   COUCHDB_DATA=/home/me/cht-4-first-run/couchd
+   CHT_COMPOSE_PATH=/home/me/cht-4-first-run/compose
    COUCHDB_USER=medic
    COUCHDB_PASSWORD=password
    ```
@@ -46,7 +46,7 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your hom
    cd ~/cht-4-first-run
    docker compose up
    ```
- 1. Your instance should now be availabe at [localhost](https://localhost) with login `medic` and password `password`.  You will need to accept the self signed certificate the first time you access the instance. 
+ 1. Your instance should now be available at [localhost](https://localhost) with login `medic` and password `password`.  You will need to accept the self signed certificate the first time you access the instance. 
 
 ## Envirenment Variables
 
