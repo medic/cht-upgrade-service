@@ -48,7 +48,7 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your use
    ```
  1. Your instance should now be available at [localhost](https://localhost) with login `medic` and password `password`.  You will need to accept the self signed certificate the first time you access the instance. 
 
-## Envirenment Variables
+## Environment Variables
 
 This is a list of all variables that can be used:
 
