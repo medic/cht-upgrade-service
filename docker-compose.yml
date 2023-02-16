@@ -17,6 +17,12 @@ services:
       - COUCHDB_UUID
       - COUCHDB_DATA
       - COUCHDB_SERVERS
+      - CLUSTER_PEER_IPS
+      - SVC_NAME
+      - SVC1_NAME
+      - SVC2_NAME
+      - SVC3_NAME
+      - COUCHDB_LOG_LEVEL
       - MARKET_URL_READ
       - BUILDS_SERVER
       - NGINX_HTTP_PORT
