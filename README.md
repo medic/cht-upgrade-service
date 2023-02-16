@@ -31,7 +31,7 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your use
     curl -s -o ./compose/cht-core.yml https://staging.dev.medicmobile.org/_couch/builds_4/medic:medic:master/docker-compose/cht-core.yml
     curl -s -o docker-compose.yml https://raw.githubusercontent.com/medic/cht-upgrade-service/main/docker-compose.yml
     ```
-1. Create an file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!). Note if you're trying to run this locally that you replace `/home/me` with your actual home dir path:
+1. Create a file in `~/cht-4-first-run` to house your variables.  Call it `.env` and give it the following contents (Note these are insecure password - use **secure** password for production!). Note if you're trying to run this locally that you replace `/home/me` with your actual home dir path:
    ```
    CHT_COMPOSE_PROJECT_NAME=4-first-run
    COUCHDB_SECRET=password
@@ -48,7 +48,7 @@ Assuming you wanted to create a new project called `cht-4-first-run` in your use
    ```
  1. Your instance should now be available at [localhost](https://localhost) with login `medic` and password `password`.  You will need to accept the self signed certificate the first time you access the instance. 
 
-## Envirenment Variables
+## Environment Variables
 
 This is a list of all variables that can be used:
 
