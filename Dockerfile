@@ -1,4 +1,4 @@
-FROM node:current-alpine3.15
+FROM node:16-alpine3.15
 
 RUN apk --no-cache add docker docker-compose
 COPY . /app

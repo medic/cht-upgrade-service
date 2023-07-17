@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
+    "eslint:fix": "eslint --color --cache ./src ./test --fix",
     "unit": "mocha ./test/unit/**/*.js --config ./test/unit/mocharc.js",
     "coverage": "nyc npm run unit",
     "test": "npm run eslint && npm run coverage",

@@ -1,8 +1,10 @@
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const dockerComposeCli = require('./docker-compose-cli');
 const dockerComposeFilePath = path.resolve('/docker-compose');
+const rootBackupFolder = path.resolve(dockerComposeFilePath, 'data', 'backup');
 
 const validComposeFile = async (contents) => {
   const tempFolder = await fs.promises.mkdtemp('docker-compose');
@@ -14,6 +16,8 @@ const validComposeFile = async (contents) => {
 
   return valid;
 };
+
+const backupIsEnabled = () => process.env.CHT_BACKUP_COMPOSE_YML !== 'false';
 
 const overwriteComposeFile = async (filePath, fileContents) => {
   await fs.promises.writeFile(filePath, fileContents, 'utf-8');
@@ -38,9 +42,12 @@ const update = async (fileName, fileContents, install = false) => {
     return false;
   }
 
-  // write temp file, validate and then overwrite
   if (!await validComposeFile(fileContents)) {
     throw new Error(`Invalid docker-compose yml for file ${fileName}`);
+  }
+
+  if (backupIsEnabled()) {
+    await backupYmlFiles();
   }
 
   await overwriteComposeFile(filePath, fileContents);
@@ -49,8 +56,58 @@ const update = async (fileName, fileContents, install = false) => {
   return true;
 };
 
+
+/**
+ * Generates a new name containing date of creation and random characters to avoid most collisions
+ * @returns {string} Name for folder e.g. 2023-07-17_131438_817_2Tjx
+ */
+const genBackupFolderName = () => {
+  const filefriendlyDatetime = new Date()
+    .toISOString()
+    .replace('T', '_')
+    .replaceAll(':', '')
+    .replace('.', '_')
+    .replace('Z', ''); // e.g. 2023-07-17_131438_817
+
+  const randomText = crypto.randomBytes(3).toString('base64url'); // 4 ASCII characters per 3 byte
+
+  return `${filefriendlyDatetime}_${randomText}`;
+};
+
+/**
+ * Backup yml files in globally defined {dockerComposeFilePath} into {rootBackupFolder}
+ */
+const backupYmlFiles = async () => {
+  const backupFolder = path.resolve(rootBackupFolder, genBackupFolderName());
+  await fs.promises.mkdir(backupFolder, { recursive: true });
+
+  const files = await getFilesInFolder(dockerComposeFilePath);
+  for (const filename of files) {
+    if (filename.endsWith('.yml')) {
+      await fs.promises.copyFile(
+        path.resolve(dockerComposeFilePath, filename),
+        path.resolve(backupFolder, filename)
+      );
+    }
+  }
+};
+
+/**
+ * @param {string} dir Directory to check for files
+ * @returns {Promise<string[]>} Files in directory
+ */
+const getFilesInFolder = async (dir) => {
+  return fs.promises
+    .readdir(dir, { withFileTypes: true })
+    .then((dirEntries) =>
+      dirEntries
+        .filter((dirEntry) => dirEntry.isFile())
+        .map((dirEntry) => dirEntry.name),
+    );
+};
+
 const startUp = async () => {
-  const files = await fs.promises.readdir(dockerComposeFilePath);
+  const files = await getFilesInFolder(dockerComposeFilePath);
   const composeFiles = [];
   for (const file of files) {
     const filePath = path.join(dockerComposeFilePath, file);
