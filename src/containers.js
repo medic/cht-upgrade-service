@@ -17,7 +17,7 @@ const validComposeFile = async (contents) => {
   return valid;
 };
 
-const backupIsEnabled = () => process.env.CHT_BACKUP_COMPOSE_YML !== 'false';
+const backupIsEnabled = () => process.env.CHT_BACKUP_COMPOSE_FILES !== 'false';
 
 const overwriteComposeFile = async (filePath, fileContents) => {
   await fs.promises.writeFile(filePath, fileContents, 'utf-8');
@@ -47,7 +47,7 @@ const update = async (fileName, fileContents, install = false) => {
   }
 
   if (backupIsEnabled()) {
-    await backupYmlFiles();
+    await backupComposeFiles();
   }
 
   await overwriteComposeFile(filePath, fileContents);
@@ -77,7 +77,7 @@ const genBackupFolderName = () => {
 /**
  * Backup yml files in globally defined {dockerComposeFilePath} into {rootBackupFolder}
  */
-const backupYmlFiles = async () => {
+const backupComposeFiles = async () => {
   const backupFolder = path.resolve(rootBackupFolder, genBackupFolderName());
   await fs.promises.mkdir(backupFolder, { recursive: true });
 
@@ -94,16 +94,13 @@ const backupYmlFiles = async () => {
 
 /**
  * @param {string} dir Directory to check for files
- * @returns {Promise<string[]>} Files in directory
+ * @returns {string[]} Files in directory
  */
 const getFilesInFolder = async (dir) => {
-  return fs.promises
-    .readdir(dir, { withFileTypes: true })
-    .then((dirEntries) =>
-      dirEntries
-        .filter((dirEntry) => dirEntry.isFile())
-        .map((dirEntry) => dirEntry.name),
-    );
+  const dirEntries = await fs.promises.readdir(dir, { withFileTypes: true });
+  return dirEntries
+    .filter((dirEntry) => dirEntry.isFile())
+    .map((dirEntry) => dirEntry.name);
 };
 
 const startUp = async () => {

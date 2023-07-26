@@ -9,7 +9,7 @@ global.expect = chai.expect;
 module.exports = {
   mochaHooks: {
     beforeEach: () => {
-      process.env.CHT_BACKUP_COMPOSE_YML = 'false';
+      process.env.CHT_BACKUP_COMPOSE_FILES = 'false';
     },
     afterEach: () => {
       sinon.restore();

@@ -228,7 +228,7 @@ describe('containers lib', () => {
     });
 
     it('should copy files for backup when enabled', async () => {
-      process.env.CHT_BACKUP_COMPOSE_YML = 'true';
+      process.env.CHT_BACKUP_COMPOSE_FILES = 'true';
 
       const filename = 'temp.yml';
       const contents = 'the contents';

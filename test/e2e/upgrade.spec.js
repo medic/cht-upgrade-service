@@ -203,14 +203,12 @@ describe('upgrade', () => {
   });
 
   it('should backup docker-compose before upgrade', async () => {
-    process.env.CHT_BACKUP_COMPOSE_YML = 'true';
     await utils.setVersion('one-two.yml', '1.0.0');
     await utils.up();
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
     expect(utils.hasBackupDir()).to.be.false;
-    utils.hasBackupDir();
 
     const upgradedToTwo = await utils.setVersion('one-two.yml', '2.0.0', false);
     await utils.upgrade( 'one-two.yml', 'one', { 'one-two.yml': upgradedToTwo });

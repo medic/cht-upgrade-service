@@ -193,13 +193,10 @@ const waitForServiceContainersUp = async () => {
   // try for 5 seconds
   let keepTrying = true;
   const killTimeout = setTimeout(() => keepTrying = false, 5000);
-  const filenames = await fs.promises
-    .readdir(dockerComposeFolder, { withFileTypes: true })
-    .then((dirEntries) =>
-      dirEntries
-        .filter((dirEntry) => dirEntry.isFile())
-        .map((dirEntry) => dirEntry.name),
-    );
+  const dirEntries = await fs.promises.readdir(dockerComposeFolder, { withFileTypes: true });
+  const filenames = dirEntries
+    .filter((dirEntry) => dirEntry.isFile())
+    .map((dirEntry) => dirEntry.name);
 
   if (!filenames.length) {
     return;
