@@ -214,15 +214,16 @@ describe('upgrade', () => {
     await utils.upgrade( 'one-two.yml', 'one', { 'one-two.yml': upgradedToTwo });
 
     expect(utils.hasBackupDir()).to.be.true;
-    expect(await utils.readBackupVersions('one-two.yml')).to.deep.equal({
-      'one': '1.0.0',
-      'two': '1.0.0',
-    });
+    expect(await utils.readLastBackupFile('one-two.yml'))
+      .to.equal(await utils.setVersion('one-two.yml', '1.0.0', false));
 
     await utils.waitForServiceContainersUp();
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('2.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('2.0.0');
+
+    expect(await utils.readLastBackupFile('one-two.yml'))
+      .to.not.equal(await utils.setVersion('one-two.yml', '2.0.0', false));
   });
 
 });

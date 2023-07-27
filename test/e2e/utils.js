@@ -253,31 +253,24 @@ const getServiceEnv = async (file, service, envVarName) => {
 const hasBackupDir = () => fs.existsSync(backupFolder);
 
 /**
- * Reads the backup directory recursively for service image versions
- * @param {string} filename 
- * @returns {Object.<string, string>} Dictionary with {service: version}. E.g. {"one": "1.0.0"}
- */
-const readBackupVersions = async (filename) => {
-  const versions = {};
 
+ * Reads the backup directory and return the contents of the last file matching {filename}
+ * @param {string} filename 
+ * @returns {Promise<string>} contents of the file
+ */
+const readLastBackupFile = async (filename) => {
   const backupFolders = await fs.promises.readdir(backupFolder);
   const lastBackupFolder = backupFolders.at(-1);
   const dir = await fs.promises.readdir(path.resolve(backupFolder, lastBackupFolder));
   for (const filePath of dir) {
     if (filePath === filename) {
-      const fileContent = await fs.promises.readFile(
+      return fs.promises.readFile(
         path.resolve(backupFolder, lastBackupFolder, filePath),
         { 'encoding': 'utf-8' }
       );
-      for (const line of fileContent.split('\n')) {
-        const matched = line.match(/image: \S+\/(?<service>[^:/]+):(?<version>\d\.\d\.\d)$/);
-        if (matched) {
-          versions[matched.groups.service] = matched.groups.version;
-        }
-      }
     }
   }
-  return versions;
+  return Promise.reject(new Error(`Could not find file ${filename} in backup dir`));
 };
 
 module.exports = {
@@ -301,5 +294,5 @@ module.exports = {
   upgrade,
   waitForServiceContainersUp,
   hasBackupDir,
-  readBackupVersions,
+  readLastBackupFile,
 };
