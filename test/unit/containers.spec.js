@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const dockerComposeCli = require('../../src/docker-compose-cli');
 const containers = require('../../src/containers');
-const fileUtils = require('./file-utils');
+const fileUtils = require('./utils/file');
 
 describe('containers lib', () => {
   describe('startup', () => {

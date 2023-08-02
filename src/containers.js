@@ -17,7 +17,7 @@ const validComposeFile = async (contents) => {
   return valid;
 };
 
-const backupIsEnabled = () => process.env.CHT_BACKUP_COMPOSE_FILES !== 'false';
+const isBackupEnabled = () => process.env.CHT_BACKUP_COMPOSE_FILES !== 'false';
 
 const overwriteComposeFile = async (filePath, fileContents) => {
   await fs.promises.writeFile(filePath, fileContents, 'utf-8');
@@ -46,7 +46,7 @@ const update = async (fileName, fileContents, install = false) => {
     throw new Error(`Invalid docker-compose yml for file ${fileName}`);
   }
 
-  if (backupIsEnabled()) {
+  if (isBackupEnabled()) {
     await backupComposeFiles();
   }
 
@@ -62,7 +62,7 @@ const update = async (fileName, fileContents, install = false) => {
  * @returns {string} Name for folder e.g. 2023-07-17_131438_817_2Tjx
  */
 const genBackupFolderName = () => {
-  const filefriendlyDatetime = new Date()
+  const fileFriendlyDateTime = new Date()
     .toISOString()
     .replace('T', '_')
     .replaceAll(':', '')
@@ -71,7 +71,7 @@ const genBackupFolderName = () => {
 
   const randomText = crypto.randomBytes(3).toString('base64url'); // 4 ASCII characters per 3 byte
 
-  return `${filefriendlyDatetime}_${randomText}`;
+  return `${fileFriendlyDateTime}_${randomText}`;
 };
 
 /**
@@ -99,8 +99,8 @@ const backupComposeFiles = async () => {
 const getFilesInFolder = async (dir) => {
   const dirEntries = await fs.promises.readdir(dir, { withFileTypes: true });
   return dirEntries
-    .filter((dirEntry) => dirEntry.isFile())
-    .map((dirEntry) => dirEntry.name);
+    .filter(dirEntry => dirEntry.isFile())
+    .map(file => file.name);
 };
 
 const startUp = async () => {
