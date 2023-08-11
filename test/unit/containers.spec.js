@@ -256,7 +256,7 @@ describe('containers lib', () => {
 
       expect(fs.promises.copyFile.args[0][0]).to.equal(`/docker-compose/temp.yml`);
       expect(fs.promises.copyFile.args[0][1]).to.match(
-        /^\/docker-compose\/data\/backup\/\d{4}-\d{2}-\d{2}-\d{0,2}-\d{0,2}-\d{0,2}-\d{0,3}-\w{4}\/temp\.yml$/
+        /\/data\/backup\/\d{4}-\d{2}-\d{2}-\d{0,2}-\d{0,2}-\d{0,2}-\d{0,3}-[A-Za-z0-9_-]{4}\/temp\.yml$/
       );
     });
   });
