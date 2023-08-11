@@ -59,19 +59,14 @@ const update = async (fileName, fileContents, install = false) => {
 
 /**
  * Generates a new name containing date of creation and random characters to avoid most collisions
- * @returns {string} Name for folder e.g. 2023-07-17_131438_817_2Tjx
+ * @returns {string} Name for folder e.g. 2023-07-17-13-14-38-817-2Tjx
  */
 const genBackupFolderName = () => {
-  const fileFriendlyDateTime = new Date()
-    .toISOString()
-    .replace('T', '_')
-    .replaceAll(':', '')
-    .replace('.', '_')
-    .replace('Z', ''); // e.g. 2023-07-17_131438_817
+  const fileFriendlyDateTime = new Date().toISOString().replaceAll(/[T:.Z]/g, '-'); // e.g. 2023-07-17-13-14-38-817-
 
   const randomText = crypto.randomBytes(3).toString('base64url'); // 4 ASCII characters per 3 byte
 
-  return `${fileFriendlyDateTime}_${randomText}`;
+  return `${fileFriendlyDateTime}${randomText}`;
 };
 
 /**
