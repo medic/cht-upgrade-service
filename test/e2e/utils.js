@@ -270,7 +270,7 @@ const readLastBackupFile = async (filename) => {
       );
     }
   }
-  return Promise.reject(new Error(`Could not find file ${filename} in backup dir`));
+  throw new Error(`Could not find file ${filename} in backup dir`);
 };
 
 module.exports = {
