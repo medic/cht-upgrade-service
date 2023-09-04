@@ -5,10 +5,11 @@
   "main": "src/index.js",
   "scripts": {
     "eslint": "eslint --color --cache ./src ./test",
-    "unit": "mocha ./test/unit/**/*.js --config ./test/unit/mocharc.js",
+    "eslint:fix": "eslint --color --cache ./src ./test --fix",
+    "unit": "mocha ./test/unit/*.js --config ./test/unit/mocharc.js",
     "coverage": "nyc npm run unit",
     "test": "npm run eslint && npm run coverage",
-    "e2e": "mocha ./test/e2e/**/*.js --config ./test/e2e/mocharc.js",
+    "e2e": "mocha ./test/e2e/*.js --config ./test/e2e/mocharc.js",
     "publish": "node ./test/publish/index.js"
   },
   "engines": {

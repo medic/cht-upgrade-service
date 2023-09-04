@@ -14,8 +14,43 @@ const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-c
 
 const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-compose');
 const servicesFolder = path.resolve(__dirname, '..', 'test-data', 'services');
+const backupFolder = path.resolve(dockerComposeFolder, 'data', 'backup');
+
+/**
+ * Wraps child_process.spawn in a Promise
+ * @param {string} command Command to run
+ * @param {string[]} args List of string arguments
+ * @param {Object} options See child_process.spawn for full list of options
+ * @returns {Promise<string>} Content of stdout or reject with error
+ **/
+const spawnPromise = (command, args = [], options = {}) => {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(command, args, options);
+    let stderr = '';
+    let stdout = '';
+    proc.on('error', (err) => reject(err));
+    proc.stdout.on('data', (chunk) => stdout += chunk.toString());
+    proc.stderr.on('data', (chunk) => stderr += chunk.toString());
+    proc.on('close', (exitCode) => {
+      exitCode ? reject(stderr) : resolve(stdout);
+    });
+  });
+};
 
 const cleanFolder = async () => {
+  try {
+    // Workaround: Since the service is run under root and the test-runner usually isn't
+    // the test-runner is unable to delete files created by the service without escalation
+    const dataFolder = path.resolve(dockerComposeFolder, 'data');
+    if (fs.existsSync(dataFolder)) {
+      const stat = await fs.promises.stat(dataFolder);
+      if (stat && stat.uid === 0) {
+        await spawnPromise('sudo', ['rm', '-rf', dataFolder]);
+      }
+    }
+  } catch (err) {
+    console.warn('Error when trying to remove docker-compose test data folder as root', err);
+  }
   try {
     await fs.promises.rm(dockerComposeFolder, { recursive: true });
     await fs.promises.mkdir(dockerComposeFolder);
@@ -27,17 +62,7 @@ const cleanFolder = async () => {
 const runScript = (file, ...args) => {
   const scriptPath = path.resolve(__dirname, '..', 'test-data', 'scripts', file);
   const cwd = path.resolve(__dirname, '..', 'test-data', 'scripts');
-  return new Promise((resolve, reject) => {
-    const proc = spawn(scriptPath, args, { cwd });
-    let stderr = '';
-    let stdout = '';
-    proc.on('error', (err) => reject(err));
-    proc.stdout.on('data', (chunk) => stdout += chunk.toString());
-    proc.stderr.on('data', (chunk) => stderr += chunk.toString());
-    proc.on('close', (exitCode) => {
-      exitCode ? reject(stderr) : resolve(stdout);
-    });
-  });
+  return spawnPromise(scriptPath, args, { cwd });
 };
 
 const dockerCommand = (files, ...params) => {
@@ -74,9 +99,9 @@ const dockerCommand = (files, ...params) => {
 };
 
 const serviceComposeCommand = (...args) => dockerCommand(DOCKER_COMPOSE_FILE, ...args);
-const testComposeCommand = (fileNames, ...args) => {
-  fileNames = Array.isArray(fileNames) ? fileNames : [fileNames];
-  const filePaths = fileNames
+const testComposeCommand = (filenames, ...args) => {
+  filenames = Array.isArray(filenames) ? filenames : [filenames];
+  const filePaths = filenames
     .map(fileName => path.resolve(dockerComposeFolder, fileName))
     .filter(filePath => fs.existsSync(filePath));
 
@@ -100,11 +125,11 @@ const fetchJson = async (url, opts = {}) => {
   throw await response.json();
 };
 
-const upgrade = async (fileNames, service, body) => {
+const upgrade = async (filenames, service, body) => {
   const payload = JSON.stringify({ docker_compose: body });
   try {
     return await testComposeCommand(
-      fileNames,
+      filenames,
       'exec -T', service,
       'npm run upgrade --', Buffer.from(payload).toString('base64')
     );
@@ -168,14 +193,17 @@ const waitForServiceContainersUp = async () => {
   // try for 5 seconds
   let keepTrying = true;
   const killTimeout = setTimeout(() => keepTrying = false, 5000);
-  const files = await fs.promises.readdir(dockerComposeFolder);
+  const dirEntries = await fs.promises.readdir(dockerComposeFolder, { withFileTypes: true });
+  const filenames = dirEntries
+    .filter(dirEntry => dirEntry.isFile())
+    .map(file => file.name);
 
-  if (!files.length) {
+  if (!filenames.length) {
     return;
   }
 
   do {
-    const up = await allContainersUp(files);
+    const up = await allContainersUp(filenames);
     if (up) {
       clearTimeout(killTimeout);
       return;
@@ -204,6 +232,7 @@ const allContainersUp = async (files) => {
       return false;
     }
   }
+  return true;
 };
 
 const getServiceVersion = async (file, service) => {
@@ -219,6 +248,29 @@ const getServiceEnv = async (file, service, envVarName) => {
   // foovalue
   const lines = output.split('\n').filter(line => line);
   return lines[2];
+};
+
+const hasBackupDir = () => fs.existsSync(backupFolder);
+
+/**
+
+ * Reads the backup directory and return the contents of the last file matching {filename}
+ * @param {string} filename 
+ * @returns {Promise<string>} contents of the file
+ */
+const readLastBackupFile = async (filename) => {
+  const backupFolders = await fs.promises.readdir(backupFolder);
+  const lastBackupFolder = backupFolders.at(-1);
+  const dir = await fs.promises.readdir(path.resolve(backupFolder, lastBackupFolder));
+  for (const filePath of dir) {
+    if (filePath === filename) {
+      return fs.promises.readFile(
+        path.resolve(backupFolder, lastBackupFolder, filePath),
+        { 'encoding': 'utf-8' }
+      );
+    }
+  }
+  throw new Error(`Could not find file ${filename} in backup dir`);
 };
 
 module.exports = {
@@ -241,4 +293,6 @@ module.exports = {
   setEnv,
   upgrade,
   waitForServiceContainersUp,
+  hasBackupDir,
+  readLastBackupFile,
 };

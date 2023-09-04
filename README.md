@@ -85,6 +85,7 @@ This is a list of all variables that can be used:
 | `DEPARTMENT`               | no       | SSL Certificate registration department. Used when `CERTIFICATE_MODE` is `AUTO_GENERATE` or `SELF_SIGNED`.                                                                                                                                                                                | `Department of Information Security`                                                 |
 | `CHT_COMPOSE_PROJECT_NAME` | no       | docker-compose project name to use for CHT-Core. Defaults to `cht`                                                                                                                                                                                                                        | `cht-dev-4-alpha`                                                                    |
 | `CHT_NETWORK`              | no       | docker network to use for cht-core and cht-upgrade-service. Defaults to `cht-net`                                                                                                                                                                                                         | `cht-dev-4-alpha-net`                                                                |
+| `CHT_BACKUP_COMPOSE_FILES` | no       | Whether to backup yml files before overwriting. Can be `true` or `false` (default `true`).                                                                                                                                                                                               | `false`                                                                              |
 
 
 
@@ -207,3 +208,4 @@ Expected response:
 ```json
 { "ok": true }
 ```
+
