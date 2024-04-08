@@ -3,6 +3,7 @@ const buildTime = new Date().getTime();
 const path = require('path');
 
 const { spawn } = require('child_process');
+const BUILD_PLATFORMS = ['linux/amd64', 'linux/arm64/v8'];
 
 const {
   ECR_REPO,
@@ -66,19 +67,19 @@ const dockerCommand = (args) => {
     const dockerfilePath = path.join(__dirname, '..', '..', 'Dockerfile');
     const tagFlags = tags.map(tag => ['-t', tag]).flat();
     const dockerBuildParams = [
+      'buildx',
       'build',
+      '--provenance=false',
+      '--platform='+ BUILD_PLATFORMS.join(','),
       '-f',
       dockerfilePath,
       ...tagFlags,
+      '--push',
       '.'
     ];
 
     await dockerCommand(dockerBuildParams);
-    for (const tag of tags) {
-      await dockerCommand(['push', tag]);
-    }
-
   } catch (err) {
-    console.error('Error while publishing docker image', err);
+    console.error('Error while building or publishing docker image', err);
   }
 })();
