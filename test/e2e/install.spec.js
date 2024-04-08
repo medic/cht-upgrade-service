@@ -107,7 +107,7 @@ describe('install', () => {
     })).to.be.rejected;
     expect(response.error).to.equal(true);
     expect(response.reason).to.match(
-      /manifest for localhost:5000\/upgrade]\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
+      /manifest for localhost:5000\/upgrade\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
     );
 
     await expect(utils.getServiceVersion('one-two.yml', 'one')).to.be.rejected;

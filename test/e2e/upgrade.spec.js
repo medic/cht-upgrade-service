@@ -154,7 +154,7 @@ describe('upgrade', () => {
     })).to.be.rejected;
     expect(response.error).to.equal(true);
     expect(response.reason).to.match(
-      /manifest for localhost:5000\/upgrade]\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
+      /manifest for localhost:5000\/upgrade\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
     );
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
@@ -171,7 +171,7 @@ describe('upgrade', () => {
     })).to.be.rejected;
     expect(response.error).to.equal(true);
     expect(response.reason).to.match(
-      /manifest for localhost:5000\/upgrade]\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
+      /manifest for localhost:5000\/upgrade\/(one|two):13.0.0 not found: manifest unknown: manifest unknown/
     );
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('2.0.0');
