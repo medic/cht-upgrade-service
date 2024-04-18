@@ -1,6 +1,7 @@
 const childProcess = require('child_process');
 
-const DOCKER_COMPOSE_CLI = 'docker-compose';
+const DOCKER_CLI = 'docker';
+const COMPOSE_ARG = 'compose';
 const RATE_EXCEEDED = 'Rate exceeded';
 
 const isRateExceededError = (err) => err && err.message && err.message.includes(RATE_EXCEEDED);
@@ -10,13 +11,14 @@ const composeCommand = (filePaths, ...params) => {
   filePaths = Array.isArray(filePaths) ? filePaths : [filePaths];
 
   const args = [
+    COMPOSE_ARG,
     ...['-p', CHT_COMPOSE_PROJECT_NAME],
     ...filePaths.map(filePath => (['-f', filePath])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
 
   return new Promise((resolve, reject) => {
-    const proc = childProcess.spawn(DOCKER_COMPOSE_CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
+    const proc = childProcess.spawn(DOCKER_CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
     proc.on('error', (err) => reject(err));
 
     let err = '';

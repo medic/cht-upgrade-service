@@ -65,8 +65,8 @@ describe('start up', () => {
 
     const result = await expect(utils.startContainers()).to.be.rejected;
     expect(result.error).to.equal(true);
-    expect(result.reason).to.include(
-      'manifest for localhost:5000/upgrade/one:10.0.0 not found: manifest unknown: manifest unknown'
+    expect(result.reason).to.match(
+      /manifest for localhost:5000\/upgrade\/(one|two):10.0.0 not found: manifest unknown: manifest unknown/
     );
 
     await utils.setVersion('one-two.yml', '2.0.0');
