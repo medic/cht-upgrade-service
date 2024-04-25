@@ -16,6 +16,7 @@ const composeCommand = (filePaths, ...params) => {
     ...filePaths.map(filePath => (['-f', filePath])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
+  console.log(`Running cmd: ${DOCKER_CLI} ${args.join(' ')}`);
 
   return new Promise((resolve, reject) => {
     const proc = childProcess.spawn(DOCKER_CLI, args, { stdio: ['ignore', 'pipe', 'pipe'] });
