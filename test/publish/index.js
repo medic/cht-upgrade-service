@@ -81,5 +81,6 @@ const dockerCommand = (args) => {
     await dockerCommand(dockerBuildParams);
   } catch (err) {
     console.error('Error while building or publishing docker image', err);
+    process.exit(1);
   }
 })();
