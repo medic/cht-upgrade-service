@@ -64,13 +64,13 @@ const runScript = (file, ...args) => {
   return spawnPromise(scriptPath, args, { cwd });
 };
 
-const dockerCommand = (files, ...params) => {
+const dockerCommand = (compose, files, ...params) => {
   files = Array.isArray(files) ? files : [files];
   const args = [
-    'compose',
+    compose,
     ...files.map(file => (['-f', file])),
     ...params.filter(param => param).map(param => param.split(' ')),
-  ].flat();
+  ].flat().filter(Boolean);
 
   console.log('docker', ...args);
 
@@ -98,7 +98,7 @@ const dockerCommand = (files, ...params) => {
   });
 };
 
-const serviceComposeCommand = (...args) => dockerCommand(DOCKER_COMPOSE_FILE, ...args);
+const serviceComposeCommand = (...args) => dockerCommand('compose', DOCKER_COMPOSE_FILE, ...args);
 const testComposeCommand = (filenames, ...args) => {
   filenames = Array.isArray(filenames) ? filenames : [filenames];
   const filePaths = filenames
@@ -109,7 +109,7 @@ const testComposeCommand = (filenames, ...args) => {
     return;
   }
 
-  return dockerCommand(filePaths, ...['-p', PROJECT_NAME, ...args]);
+  return dockerCommand('compose', filePaths, ...['-p', PROJECT_NAME, ...args]);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -281,6 +281,7 @@ module.exports = {
   runScript,
   serviceComposeCommand,
   testComposeCommand,
+  dockerCommand,
   fetchJson,
   cleanFolder,
   setVersion,
