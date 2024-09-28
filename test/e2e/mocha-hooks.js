@@ -31,7 +31,9 @@ module.exports = {
       await utils.testComposeCommand(['one-two.yml', 'three.yml'], 'down --remove-orphans -t 1');
       try {
         await utils.dockerCommand('', [], 'network rm the_network');
-      } catch {}
+      } catch (err) {
+        console.warn(err);
+      }
     },
 
   }

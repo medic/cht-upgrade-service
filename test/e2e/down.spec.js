@@ -11,7 +11,6 @@ describe('teardown', () => {
     expect(await utils.getServiceVersion('three.yml', 'three')).to.equal('1.0.0');
 
     await utils.serviceComposeCommand('down --remove-orphans -t 1');
-    await utils.serviceComposeCommand()
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
