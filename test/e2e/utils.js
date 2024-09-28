@@ -9,7 +9,6 @@ const NETWORK = 'the_network';
 const PROJECT_NAME = 'the_project';
 process.env.NETWORK = NETWORK;
 process.env.CHT_COMPOSE_PROJECT_NAME = PROJECT_NAME;
-const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
 const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-compose');
@@ -68,14 +67,15 @@ const runScript = (file, ...args) => {
 const dockerCommand = (files, ...params) => {
   files = Array.isArray(files) ? files : [files];
   const args = [
+    'compose',
     ...files.map(file => (['-f', file])),
     ...params.filter(param => param).map(param => param.split(' ')),
   ].flat();
 
-  console.log(DOCKER_COMPOSE_CLI, ...args);
+  console.log('docker', ...args);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, args, { env: { ...process.env, ...env } });
+    const proc = spawn('docker', args, { env: { ...process.env, ...env } });
     proc.on('error', (err) => reject(err));
 
     let err = '';
