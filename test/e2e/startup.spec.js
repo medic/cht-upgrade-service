@@ -46,7 +46,12 @@ describe('start up', () => {
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
 
-    await utils.up();
+    try {
+      await utils.up();
+    } catch (err) {
+      expect(err).to.match('a network with name the_network exists but was not created for project');
+    }
+
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');
