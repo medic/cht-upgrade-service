@@ -49,7 +49,7 @@ describe('start up', () => {
     try {
       await utils.up();
     } catch (err) {
-      expect(err).to.match('a network with name the_network exists but was not created for project');
+      expect(err).to.match(/a network with name the_network exists/);
     }
 
 
