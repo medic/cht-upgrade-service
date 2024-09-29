@@ -9,7 +9,6 @@ const NETWORK = 'the_network';
 const PROJECT_NAME = 'the_project';
 process.env.NETWORK = NETWORK;
 process.env.CHT_COMPOSE_PROJECT_NAME = PROJECT_NAME;
-const DOCKER_COMPOSE_CLI = 'docker-compose';
 const DOCKER_COMPOSE_FILE = path.resolve(__dirname, '..', 'test-data', 'docker-compose.test.yml');
 
 const dockerComposeFolder = path.resolve(__dirname, '..', 'test-data', 'docker-compose');
@@ -65,17 +64,18 @@ const runScript = (file, ...args) => {
   return spawnPromise(scriptPath, args, { cwd });
 };
 
-const dockerCommand = (files, ...params) => {
+const dockerCommand = (compose, files, ...params) => {
   files = Array.isArray(files) ? files : [files];
   const args = [
+    compose,
     ...files.map(file => (['-f', file])),
     ...params.filter(param => param).map(param => param.split(' ')),
-  ].flat();
+  ].flat().filter(Boolean);
 
-  console.log(DOCKER_COMPOSE_CLI, ...args);
+  console.log('docker', ...args);
 
   return new Promise((resolve, reject) => {
-    const proc = spawn(DOCKER_COMPOSE_CLI, args, { env: { ...process.env, ...env } });
+    const proc = spawn('docker', args, { env: { ...process.env, ...env } });
     proc.on('error', (err) => reject(err));
 
     let err = '';
@@ -98,7 +98,7 @@ const dockerCommand = (files, ...params) => {
   });
 };
 
-const serviceComposeCommand = (...args) => dockerCommand(DOCKER_COMPOSE_FILE, ...args);
+const serviceComposeCommand = (...args) => dockerCommand('compose', DOCKER_COMPOSE_FILE, ...args);
 const testComposeCommand = (filenames, ...args) => {
   filenames = Array.isArray(filenames) ? filenames : [filenames];
   const filePaths = filenames
@@ -109,7 +109,7 @@ const testComposeCommand = (filenames, ...args) => {
     return;
   }
 
-  return dockerCommand(filePaths, ...['-p', PROJECT_NAME, ...args]);
+  return dockerCommand('compose', filePaths, ...['-p', PROJECT_NAME, ...args]);
 };
 
 const fetchJson = async (url, opts = {}) => {
@@ -281,6 +281,7 @@ module.exports = {
   runScript,
   serviceComposeCommand,
   testComposeCommand,
+  dockerCommand,
   fetchJson,
   cleanFolder,
   setVersion,
