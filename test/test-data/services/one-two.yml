@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   one:
     image: localhost:5000/upgrade/one:<version>
