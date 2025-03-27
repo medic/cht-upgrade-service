@@ -42,6 +42,9 @@ services:
       - DOCKER_CONFIG_PATH
       - CHT_COMPOSE_PATH
       - HEALTHCHECK_LOG_LEVEL
+      - DB1_DATA
+      - DB2_DATA
+      - DB3_DATA
 
 networks:
   cht-net:
