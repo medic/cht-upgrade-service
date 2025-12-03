@@ -18,3 +18,4 @@ services:
 networks:
   test-network-one:
     name: ${NETWORK:-test_network}
+    external: true

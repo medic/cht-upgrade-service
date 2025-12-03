@@ -41,6 +41,7 @@ describe('start up', () => {
     await utils.setVersion('one-two.yml', '1.0.0');
     await utils.setVersion('three.yml', '1.0.0');
 
+    await utils.dockerCommand('', [], 'network create the_network');
     await utils.testComposeCommand('one-two.yml', 'up -d');
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
@@ -49,9 +50,8 @@ describe('start up', () => {
     try {
       await utils.up();
     } catch (err) {
-      expect(err).to.match(/a network with name the_network exists/);
+      expect(err).to.match(/network the_network was found but has incorrect label/);
     }
-
 
     expect(await utils.getServiceVersion('one-two.yml', 'one')).to.equal('1.0.0');
     expect(await utils.getServiceVersion('one-two.yml', 'two')).to.equal('1.0.0');

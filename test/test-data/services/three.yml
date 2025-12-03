@@ -10,3 +10,4 @@ services:
 networks:
   test-network-three:
     name: ${NETWORK:-test_network}
+    external: true

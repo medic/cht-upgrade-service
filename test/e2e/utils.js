@@ -236,12 +236,12 @@ const allContainersUp = async (files) => {
 };
 
 const getServiceVersion = async (file, service) => {
-  const version = await testComposeCommand(file, 'exec -T', service, 'npm pkg get version');
+  const version = await testComposeCommand(file, 'exec', service, 'npm pkg get version');
   return version && version.replace(/["\n]/g, '');
 };
 
 const getServiceEnv = async (file, service, envVarName) => {
-  const output = await testComposeCommand(file, 'exec -T', service, `npm run ${envVarName.toLowerCase()}`);
+  const output = await testComposeCommand(file, 'exec', service, `npm run ${envVarName.toLowerCase()}`);
   // output looks like (excluding empty lines)
   // one@3.0.0 foo
   // echo $FOO
